@@ -1,0 +1,27 @@
+ARP Request
+
+	Ethernet Header
+
+		Destination: Cisco_65:0e:70 (00:21:d8:65:0e:70) 	
+		Source: TP-Link_0e:ff:f0 (7c:c2:c6:0e:ff:f0)
+
+	ARP PACKET
+
+		Sender MAC address: TP-Link_0e:ff:f0 (7c:c2:c6:0e:ff:f0)
+		Sender IP address: 192.1.1.8
+		Target MAC address: 00:00:00_00:00:00 (00:00:00:00:00:00)
+		Target IP address: 192.1.1.18
+
+ARP Response
+
+	Ethernet Header
+
+		Destination: TP-Link_0e:ff:f0 (7c:c2:c6:0e:ff:f0)
+		Source: Cisco_65:0e:70 (00:21:d8:65:0e:70)
+	
+	ARP PACKET
+	
+		Sender MAC address: Cisco_65:0e:70 (00:21:d8:65:0e:70)
+		Sender IP address: 192.1.1.18
+		Target MAC address: TP-Link_0e:ff:f0 (7c:c2:c6:0e:ff:f0)
+		Target IP address: 192.1.1.8

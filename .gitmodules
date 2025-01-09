@@ -1,0 +1,6 @@
+[submodule "AED/AED-assignments"]
+	path = AED/AED-assignments
+	url = https://github.com/rubenpeq/AED-assignments.git
+[submodule "RC1/RC1_projeto"]
+	path = RC1/RC1_projeto
+	url = https://github.com/rubenpeq/RC1_projeto.git
