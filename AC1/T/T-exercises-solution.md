@@ -562,8 +562,9 @@ Para ``f = g + h + B[2]`` foram usadas 3 instruções assembly e em ``j = g - A[
 | A+1      | 0x00  |
 | A+0      | 0x12  |
 
-| A[0] | 0x00000012 |
+| A | Valor |
 |:----:|:----:|
+| A[0] | 0x00000012 |
 | A[1] | 0x22ED3400 |
 | A[2] | 0x00000001 |
 
@@ -583,8 +584,9 @@ Para ``f = g + h + B[2]`` foram usadas 3 instruções assembly e em ``j = g - A[
 | B+1      | 0xFF  |
 | B+0      | 0xFE  |
 
-| B[0] | 0xFFFFFFFE |
+| B | Valor |
 |:----:|:----:|
+| B[0] | 0xFFFFFFFE |
 | B[1] | 0x00005002 |
 | B[2] | 0x00000002 |
 
@@ -620,15 +622,15 @@ void troca(int *x, int *y)
 Na instrução ``jr $ra`` o endereço-alvo é o valor presente no registo $ra.
 
 ## 63. Qual é o menor e o maior endereço para onde uma instrução "j", residente no endereço de memória 0x5A18F34C, pode saltar?
-Uma instrução do tipo "j" tem os 4 bits mais significantes iguais ao PC(program counter), ou seja, o menor endereço será **0x50000000** e o maior **0x5FFFFFFF**.
+Uma instrução do tipo **j** tem os 4 bits mais significantes iguais ao PC(program counter), ou seja, o menor endereço será **0x50000000** e o maior **0x5FFFFFFF**.
 
 ## 64. Qual é o menor e o maior endereço para onde uma instrução "beq", residente no endereço de memória 0x5A18F34C, pode saltar?
-Uma instrução "beq" é do tipo **I**, por isso o endereço-alvo = PC + (offset << 2). O PC na execução desta instrução seria PC = 0x5A18F34C + 4 = 0x5A18F350. O offset é codificado com 16 bits em complemento para dois, logo:
+Uma instrução ``beq`` é do tipo **I**, por isso o endereço-alvo = PC + (offset << 2). O PC na execução desta instrução seria PC = 0x5A18F34C + 4 = 0x5A18F350. O offset é codificado com 16 bits em complemento para dois, logo:
 - Endereço Mínimo = 0x5A18F350 - $2^{15} \times 4$ = 0x5A16F350
 - Endereço Máximo = 0x5A18F350 + $(2^{15}-1) \times 4$ = 0x5A1AF34C
 
 ## 65. Qual é o menor e o maior endereço para onde uma instrução "jr", residente no endereço de memória 0x5A18F34C pode saltar?
-Uma instrução do tipo jr pode saltar para qualquer endereço de 32 bits presente no registo associado à instrução, logo pode saltar entre **0x00000000** e **0xFFFFFFFF**.
+Uma instrução ``jr`` pode saltar para qualquer endereço de 32 bits presente no registo associado à instrução, logo pode saltar entre **0x00000000** e **0xFFFFFFFF**.
 
 ## 66. Qual a gama de representação da constante nas instruções aritméticas imediatas (e.g. addi)?
 As instruções aritméticas imediatas são do formato **I** por isso usa 16 bits em complemento para dois para representar a constante, logo a gama de representação será entre $[-2^{15}, 2^{15}-1]$ ([-32768, +32767]).
@@ -640,7 +642,7 @@ As instruções lógicas imediatas, também são do formato **I**, mas ao contr�
 Como as instruções são todas codificadas em 32 bits, não há maneira de manipular diretamente uma constante de 32 bits com apenas 1 instrução, sendo que para além da costante é necessário estar codificado os outros campos da instrução (OpCode, registos, ...).
 
 ## 69. Como é que, no assembly do MIPS, se podem manipular constantes de 32 bits?
-As constantes de 32 bits são manipuladas através instrução **lui** (Load Upper Immediate), que coloca a constante “immediate” nos 16 bits mais significativos do registo destino e de seguida uma instrução **ori** com os 16 bits menos significativos da constante de 32 bits.
+As constantes de 32 bits são manipuladas através instrução ``lui`` (Load Upper Immediate), que coloca a constante “immediate” nos 16 bits mais significativos do registo destino e de seguida uma instrução ``ori`` com os 16 bits menos significativos da constante de 32 bits.
 ```asm
 lui $6,0xF328       #$6 = 0xF3280000
 ori $6,$6,0x64D9    #$6 = 0xF3280000 | 0x000064D9 = 0xF32864D9
@@ -680,3 +682,54 @@ ori $1, $1, 0x3456   # $1 = 0x00123456
 slt $2, $3, $1       # $2 = 1 if $3 < $1 else 0
 bne $2, $0, L2       # branch if $2 != $0
 ```
+
+## 71. O que é uma sub-rotina?
+Uma sub-rotina é a uma função.
+
+## 72. Qual a instrução do MIPS usada para evocar uma sub-rotina? 
+A instrução usada para evocar uma sub-rotina é ``jal``.
+
+## 73. Por que razão não pode ser usada a instrução "j" para evocar uma sub-rotina?
+Não pode ser usada a instrução ``j`` pois é necessário guardar o PC no registo $ra para se saber onde retornar ao código depois da execução da sub-rotina.
+
+## 74. Quais as operações que são sequencialmente realizadas na execução de uma instrução de evocação de uma sub-rotina?
+- Fase fetch
+    - ``IR = MEM[PC]    # IR = código máquina``
+    - ``PC = PC + 4``
+- Fase execute
+    - ``$ra = PC``
+    - ``PC = target_address``
+
+## 75. Qual o número e nome virtual do registo associado à execução dessa instrução?
+O registo associado à execução da instrução ``jal`` é o **$ra (return address)** e tem o número **$31**.
+
+## 76. No caso de uma sub-rotina ser simultaneamente chamada e chamadora (sub-rotina intermédia) que operações é obrigatório realizar nessa sub-rotina?
+No caso de ser uma sub-rotina intermédia, deve-se salvaguardar os registos seguros (**$s**) que vai utilizar, assim como o valor do **$ra**.
+
+## 77. Qual a instrução usada para retornar de uma sub-rotina?
+A instrução usada para retornar de uma sub-rotina é ``jr $ra``.
+
+## 78. Que operação fundamental é realizada na execução dessa instrução?
+O PC será alterado para o valor presente no **$ra**.
+
+## 79. O que é uma stack e qual a finalidade do stack pointer?
+Uma stack é uma estrutura na memória essencial para a manipulação eficiente de dados temporários na memória e o stack pointer aponta para o topo da stack, conseguindo assim fazer a manipulação da stack.
+
+## 80. Como funcionam as operações de push e pop?
+- Push
+    - Decrementa o stack pointer (SP) para alocar espaço na stack.
+    - Armazena o valor no endereço apontado pelo SP.
+```asm
+addi $sp, $sp, -4   # Decrementa o SP para alocar espaço
+sw $t0, 0($sp)      # Armazena o valor de $t0 na stack
+```
+- Pop
+    - Recupera o valor armazenado no topo da stack (endereço apontado pelo SP).
+    - Incrementa o stack pointer (SP) para liberar o espaço.
+```asm
+lw $t0, 0($sp)      # Recupera o valor do topo da stack
+addi $sp, $sp, 4    # Incrementa o SP para liberar espaço
+```
+
+## 81. Por que razão as stacks crescem normalmente no sentido dos endereços mais baixos?
+A estratégia de crescimento da stack no sentido dos endereços mais baixos permite uma gestão simplificada da fronteira entre os segmentos de dados e de stack.
