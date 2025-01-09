@@ -704,7 +704,7 @@ Não pode ser usada a instrução ``j`` pois é necessário guardar o PC no regi
 O registo associado à execução da instrução ``jal`` é o **$ra (return address)** e tem o número **$31**.
 
 ## 76. No caso de uma sub-rotina ser simultaneamente chamada e chamadora (sub-rotina intermédia) que operações é obrigatório realizar nessa sub-rotina?
-No caso de ser uma sub-rotina intermédia, deve-se salvaguardar os registos seguros (**$s**) que vai utilizar, assim como o valor do **$ra**.
+No caso de ser uma sub-rotina intermédia, deve-se salvaguardar os registos seguros (**$sn**) que vai utilizar, assim como o valor do **$ra**.
 
 ## 77. Qual a instrução usada para retornar de uma sub-rotina?
 A instrução usada para retornar de uma sub-rotina é ``jr $ra``.
@@ -733,3 +733,155 @@ addi $sp, $sp, 4    # Incrementa o SP para liberar espaço
 
 ## 81. Por que razão as stacks crescem normalmente no sentido dos endereços mais baixos?
 A estratégia de crescimento da stack no sentido dos endereços mais baixos permite uma gestão simplificada da fronteira entre os segmentos de dados e de stack.
+
+## 82. Quais as regras para a implementação em software de uma stack no MIPS?
+1. O registo $sp (stack pointer) contém o endereço da última posição ocupada da stack.
+2. A stack cresce no sentido decrescente dos endereços da memória.
+3. A stack está organizada em words de 32 bits.
+
+## 83. Qual o registo usado, no MIPS, como stack pointer?
+O registo usado como stack pointer é o **$29 ($sp)**.
+
+## 84.  De acordo com a convenção de utilização de registos no MIPS:  
+### a. Que registos são usados para passar parâmetros e para devolver resultados de uma sub-rotina?
+Os registos usados para passar parâmetros são $a0 a $a3 e para devolver $v0 e $v1.
+
+### b. Quais os registos que uma sub-rotina pode livremente usar e alterar sem necessidade de prévia salvaguarda?
+Os registos $t0 a $t9, $v0 e $v1, e $a0 a $a3 podem ser livremente utilizados e alterados pelas sub-rotinas.
+
+### c. Quais os registos que uma sub-rotina chamadora tem a garantia que a sub-rotina chamada não altera?
+Os registos $s0 a $s7 tem a garantia de que a sub-rotina não os irá alterar.
+
+### d. Em que situação devem ser usados registos “$sn”?
+Os registos $sn devem ser usados caso haja uma chamada a outra sub-rotina e seja necessário usar os registos após a execução dessa.
+
+### e. Em que situação devem ser usados os restantes registos: $tn, $an e $vn?
+Os restantes registos devem ser utilizados para os restantes valores que não necessitam de ficar guardados.
+
+## 85. De acordo com a convenção de utilização de registos do MIPS:
+### a. Que registos podem ter de ser copiados para a stack numa sub-rotina intermédia?
+Numa sub-rotina intermédia deve ser copiado o registo $ra e podem ser copiados os registos $sn que vão ser usados.
+
+### b. Que registos podem ter de ser copiados para a stack numa sub-rotina terminal?
+Num sub-rotina terminal não deve ser necessário copiar registos para a stack.
+
+## 86. Para a função com o protótipo seguinte indique, para cada um dos parâmetros de entrada e para o valor devolvido, qual o registo do MIPS usado para a passagem dos respetivos valores:
+```c
+char fun(int a, unsigned char b, char *c, int *d);
+```
+| Parâmetro | Registo |
+|:----:|:----:|
+| a | $a0 |
+| b | $a1 |
+| c | $a2 |
+| d | $a3 |
+| return | $v0 |
+
+## 87. Para uma codificação em complemento para 2, apresente a gama de representação que é possível obter com 3, 4, 5, 8 e 16 bits (indique os valores-limite da representação em binário, hexadecimal e em decimal com sinal e módulo).
+- 3 bits
+    - [0b100, 0b011]
+    - [0x4, 0x3]
+    - [-4, 3]
+- 4 bits
+    - [0b1000, 0b0111]
+    - [0x8, 0x7]
+    - [-8, 7]
+- 5 bits
+    - [0b10000, 0b01111]
+    - [0x10, 0x0F]
+    - [-16, 15]
+- 8 bits
+    - [0b10000000, 0b01111111]
+    - [0x80, 0x7F]
+    - [-128, 127]
+- 16 bits
+    - [0b1000000000000000, 0b0111111111111111]
+    - [0x8000, 0x7FFF]
+    - [-32768, 32767]
+
+## 88. Traduza para assembly do MIPS a seguinte função “fun1()”, aplicando a convenção de passagem de parâmetros e salvaguarda de registos:
+```c
+char *fun2(char *, char);
+char *fun1(int n, char *a1, char *a2)
+{
+    int j = 0;
+    char *p = a1;
+
+    do
+    {
+        if((j % 2) == 0)
+            fun2(a1++, *a2++);
+    } while(++j < n);
+    *a1='\0';
+    return p;
+}
+```
+```asm
+# char *fun1(int n, char *a1, char *a2)
+# Register map
+# $s0 -> n (int)
+# $s1 -> a1 (char *)
+# $s2 -> a2 (char *)
+# $s3 -> p
+# $s4 -> j
+
+fun1:
+    addi $sp, $sp, -24          # allocate space in stack
+    sw $ra, 0($sp)              # save $ra
+    sw $s0, 4($sp)              # save $s0
+    sw $s1, 8($sp)              # save $s1
+    sw $s2, 12($sp)             # save $s2
+    sw $s3, 16($sp)             # save $s3
+    sw $s4, 20($sp)             # save $s4
+
+    move $s0, $a0               # $s0 = n
+    move $s1, $a1               # $s1 = a1
+    move $s2, $a2               # $s2 = a2
+    
+    li $s4, 0                   # j = 0
+    move $s3, $s1               # *p = a1
+
+do:
+    rem $t0, $s4, 2             # $t0 = j % 2
+    bne $t0, $0, endif          # if((j % 2) == 0)
+
+    move $a0, $s1               # $a0 = a1
+    lb $a1, 0($s2)              # $a1 = *a2
+    jal fun2                    # fun2(a1, *a2);
+    addi $s1, $s1, 1            # a1++
+    addi $s2, $s2, 1            # a2++
+
+endif:
+    addi $s4, $s4, 1            # ++j
+    blt $s4, $s0, do            # while(++j < n);
+
+    sb $0, 0($s1)               # *a1 = '\0'
+    move $v0, $s3               # return p
+
+    lw $ra, 0($sp)              # restore $ra
+    lw $s0, 4($sp)              # restore $s0
+    lw $s1, 8($sp)              # restore $s1
+    lw $s2, 12($sp)             # restore $s2
+    lw $s3, 16($sp)             # restore $s3
+    lw $s4, 20($sp)             # restore $s4
+    addi $sp, $sp, 24           # free stack
+    jr   $ra                    # end sub-routine
+```
+
+## 89. Determine a representação em complemento para 2, com 16 bits, das seguintes quantidades decimais:  
+5 = **0000 0000 0000 0101**
+-3 = **1111 1111 1111 1101**
+-128 = **1111 1111 1000 0000**
+-32768 = **1000 0000 0000 0000**
+31 = **0000 0000 0001 1111**
+-8 = **1111 1111 1111 1000**
+256 = **0000 0001 0000 0000**
+-32 = **1111 1111 1110 0000**
+
+## 90. Determine o valor em decimal representado por cada uma das quantidades seguintes, supondo que estão codificadas em complemento para 2 com 8 bits:  
+ 0b00101011 = **53**
+ 0xA5 = 1010 0101 = - (0b01011010 + 1) = - 0b01011011 = **-91**
+ 0b10101101 = - (0b01010010 + 1) = - 0b01010011 = **-83**
+ 0x6B = 0b01101011 = **107**
+ 0xFA = - (0b00000101 + 1) = - 0b00000110 = **-6**
+ 0x80 = - (0b01111111 + 1) = - 0b10000000 = **-128**
