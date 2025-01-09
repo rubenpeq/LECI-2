@@ -544,3 +544,139 @@ sub $t4, $t1, $t4   # j = g - A[B[2]]
 
 ### b. Quantas instruções assembly são necessárias para cada uma das instruções C indicadas? E quantos registos auxiliares são necessários?
 Para ``f = g + h + B[2]`` foram usadas 3 instruções assembly e em ``j = g - A[B[2]]`` são necessárias 4 instruções assembly. Em ambas não foi necessário utilizar nenhum registo auxiliar.
+
+### c. Considerando a tabela seguinte que representa o conteúdo byte-a-byte da memória, nos endereços correspondentes aos arrays A e B, indique o valor de cada elemento dos arrays assumindo uma organização little endian.
+| Endereço | Valor |
+|:--------:|:-----:|
+| A+12     | ...   |
+| A+11     | 0x00  |
+| A+10     | 0x00  |
+| A+9      | 0x00  |
+| A+8      | 0x01  |
+| A+7      | 0x22  |
+| A+6      | 0xED  |
+| A+5      | 0x34  |
+| A+4      | 0x00  |
+| A+3      | 0x00  |
+| A+2      | 0x00  |
+| A+1      | 0x00  |
+| A+0      | 0x12  |
+
+| A[0] | 0x00000012 |
+|:----:|:----:|
+| A[1] | 0x22ED3400 |
+| A[2] | 0x00000001 |
+
+| Endereço | Valor |
+|:--------:|:-----:|
+| B+12     | ...   |
+| B+11     | 0x00  |
+| B+10     | 0x00  |
+| B+9      | 0x00  |
+| B+8      | 0x02  |
+| B+7      | 0x00  |
+| B+6      | 0x00  |
+| B+5      | 0x50  |
+| B+4      | 0x02  |
+| B+3      | 0xFF  |
+| B+2      | 0xFF  |
+| B+1      | 0xFF  |
+| B+0      | 0xFE  |
+
+| B[0] | 0xFFFFFFFE |
+|:----:|:----:|
+| B[1] | 0x00005002 |
+| B[2] | 0x00000002 |
+
+### d. Assumindo que g = -3 e h = 2, qual o valor final das variáveis f e j?
+f = g + h + B[2] = -3 + 2 + 0x02 = **0x00000001 (1)** 
+j = g - A[B[2]] = -3 - A[2] = -3 - 0x01 = **0xFFFFFFFC (-4)**
+
+## 61. Pretende-se escrever uma função para a troca do conteúdo de duas variáveis (a e b).
+**Isto é, se, antes da chamada à função, a=2 e b=5, então, após a chamada à função, os valores de a e b devem ser: a=5 e b=2**
+**Uma solução incorreta para o problema é a seguinte:**
+```c
+void troca(int x, int y)
+{
+    int aux;
+    aux = x;
+    x = y;
+    y = aux;
+}
+```
+**Identifique o erro presente no trecho de código e faça as necessárias correções para que a função tenha o comportamento pretendido.**<br>
+A solução anterior troca apenas a cópia dos valores que foram dados à função, para alterar os valores originais teria de ser com os ponteiros para as variáveis.
+```c
+void troca(int *x, int *y)
+{
+    int aux;
+    aux = *x;
+    *x = *y;
+    *y = aux;
+}
+```
+
+## 62. Na instrução "jr $ra", como é obtido o endereço-alvo?
+Na instrução ``jr $ra`` o endereço-alvo é o valor presente no registo $ra.
+
+## 63. Qual é o menor e o maior endereço para onde uma instrução "j", residente no endereço de memória 0x5A18F34C, pode saltar?
+Uma instrução do tipo "j" tem os 4 bits mais significantes iguais ao PC(program counter), ou seja, o menor endereço será **0x50000000** e o maior **0x5FFFFFFF**.
+
+## 64. Qual é o menor e o maior endereço para onde uma instrução "beq", residente no endereço de memória 0x5A18F34C, pode saltar?
+Uma instrução "beq" é do tipo **I**, por isso o endereço-alvo = PC + (offset << 2). O PC na execução desta instrução seria PC = 0x5A18F34C + 4 = 0x5A18F350. O offset é codificado com 16 bits em complemento para dois, logo:
+- Endereço Mínimo = 0x5A18F350 - $2^{15} \times 4$ = 0x5A16F350
+- Endereço Máximo = 0x5A18F350 + $(2^{15}-1) \times 4$ = 0x5A1AF34C
+
+## 65. Qual é o menor e o maior endereço para onde uma instrução "jr", residente no endereço de memória 0x5A18F34C pode saltar?
+Uma instrução do tipo jr pode saltar para qualquer endereço de 32 bits presente no registo associado à instrução, logo pode saltar entre **0x00000000** e **0xFFFFFFFF**.
+
+## 66. Qual a gama de representação da constante nas instruções aritméticas imediatas (e.g. addi)?
+As instruções aritméticas imediatas são do formato **I** por isso usa 16 bits em complemento para dois para representar a constante, logo a gama de representação será entre $[-2^{15}, 2^{15}-1]$ ([-32768, +32767]).
+
+## 67. Qual a gama de representação da constante nas instruções lógicas imediatas (e.g. andi)?
+As instruções lógicas imediatas, também são do formato **I**, mas ao contrário das aritméticas imediatas, as lógicas não precisam de lidar com sinal, logo a gama de representação será entre $[0, 2^{16}-1]$ ([0, +65535]).
+
+## 68. Por que razão não existe, no ISA do MIPS, uma instrução nativa que permita manipular diretamente uma constante de 32 bits?
+Como as instruções são todas codificadas em 32 bits, não há maneira de manipular diretamente uma constante de 32 bits com apenas 1 instrução, sendo que para além da costante é necessário estar codificado os outros campos da instrução (OpCode, registos, ...).
+
+## 69. Como é que, no assembly do MIPS, se podem manipular constantes de 32 bits?
+As constantes de 32 bits são manipuladas através instrução **lui** (Load Upper Immediate), que coloca a constante “immediate” nos 16 bits mais significativos do registo destino e de seguida uma instrução **ori** com os 16 bits menos significativos da constante de 32 bits.
+```asm
+lui $6,0xF328       #$6 = 0xF3280000
+ori $6,$6,0x64D9    #$6 = 0xF3280000 | 0x000064D9 = 0xF32864D9
+```
+
+## 70. Apresente a decomposição em instruções nativas das seguintes instruções virtuais:
+### a. li  $6,0x8B47BE0F
+```asm
+lui $6, 0x8B47       # $6 = 0x8B470000
+ori $6, $6, 0xBE0F   # $6 = 0x8B47BE0F
+```
+
+### b. xori $3,$4,0x12345678
+```asm
+lui $1, 0x1234       # $1 = 0x1234
+ori $1, $1, 0x5678   # $1 = 0x12345678
+xor $3, $4, $1       # $3 = $4 ^ $1
+```
+
+### c. addi $5,$2,0xF345AB17
+```asm
+lui $1, 0xF345       # $1 = 0xF345
+ori $1, $1, 0xAB17   # $1 = 0xF345AB17
+add $5, $2, $1       # $5 = $2 + $1
+```
+
+### d. beq $7,100,L1
+```asm
+li $1, 100           # $1 = 100
+beq $7, $1, L1       # branch if $7 == $1
+```
+
+### e. blt $3,0x123456,L2
+```asm
+lui $1, 0x0012       # $1 = 0x0012
+ori $1, $1, 0x3456   # $1 = 0x00123456
+slt $2, $3, $1       # $2 = 1 if $3 < $1 else 0
+bne $2, $0, L2       # branch if $2 != $0
+```
