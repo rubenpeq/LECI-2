@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mensagem Geral</title>
+    <link rel="icon" type="image/x-icon" href="images/logo_1.png">
+    <link rel="stylesheet" href="css/mensagens_geral.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+    <div style="background-color: white; height: 12vh;">
+    <header class="header">
+        <div class="top">
+            <h2 class="nome">Mensagens</h2>                
+        </div>
+    </header>
+        <div class="search-box-uihut">
+            <input type="text" id="writeYourMessage" class="write-your-message" placeholder="Search messages...">
+            <div id="autocomplete-results" class="autocomplete"></div>
+        </div>
+    </div>
+        
+        <div id="message-container">
+            <!-- Aqui serão adicionados dinamicamente os links para as mensagens -->
+        </div>
+
+    <div class="tab-bar">
+        <div class="line-172"></div>
+        <div class="container-4">
+            <div class="icon">
+                <a href="pagina_inicial">
+                    <img src="images/home.png" />
+                </a>
+            </div>
+            <div class="icon">
+                <a href="explorar">
+                    <img src="images/search.png" />
+                </a>
+            </div>
+            <div class="icon">
+                <a href="lista_eventos">
+                    <img src="images/calendar.png" />
+                </a>
+            </div>
+            <div class="icon">
+                <a href="mensagens_geral">
+                    <img src="images/messages.png" />
+                </a>
+            </div>
+            <div class="nav_perfil">
+                <div class="nav_avatar">
+                <a href="perfil"><img src="images/default.png"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+function autocomplete(input) {
+    let currentFocus = -1;
+
+    input.addEventListener("input", function(e) {
+        let val = this.value;
+        closeAllLists();
+        currentFocus = -1;
+
+        if (!val) { return false; }
+
+        // Envie uma solicitação para buscar todos os usuários registrados na base de dados
+        fetch('/todos_utilizadores')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Recupere os nomes dos usuários da resposta JSON
+                const users = data.users.map(user => user.nome);
+
+                // Filtrar os nomes dos usuários que correspondem ao valor digitado
+                const suggestions = users.filter(userName =>
+                    userName.toLowerCase().startsWith(val.toLowerCase())
+                );
+
+                const container = document.getElementById("autocomplete-results");
+                container.innerHTML = '';
+
+                suggestions.forEach(suggestion => {
+                    const item = document.createElement("div");
+                    item.innerHTML = `<strong>${suggestion.substr(0, val.length)}</strong>${suggestion.substr(val.length)}`;
+                    item.innerHTML += `<input type='hidden' value='${suggestion}'>`;
+                    item.addEventListener("click", function(e) {
+                        input.value = this.getElementsByTagName("input")[0].value;
+                        closeAllLists();
+                        // Adicione aqui a função a ser chamada quando uma sugestão for selecionada
+                    });
+                    container.appendChild(item);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao buscar sugestões:', error);
+            });
+    });
+
+    input.addEventListener("keydown", function(e) {
+        let list = document.getElementById("autocomplete-results").getElementsByTagName("div");
+        if (e.keyCode === 40) { // Seta para baixo
+            currentFocus++;
+            addActive(list);
+        } else if (e.keyCode === 38) { // Seta para cima
+            currentFocus--;
+            addActive(list);
+        } else if (e.keyCode === 13) { // Enter
+            e.preventDefault();
+            if (currentFocus > -1) {
+                list[currentFocus].click();
+            } else {
+                // Aqui você pode adicionar uma função para executar quando a tecla Enter é pressionada sem seleção de sugestão
+            }
+        }
+    });
+
+    function addActive(items) {
+        if (!items) return false;
+        removeActive(items);
+        if (currentFocus >= items.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (items.length - 1);
+        items[currentFocus].classList.add("autocomplete-active");
+    }
+
+    function removeActive(items) {
+        for (let i = 0; i < items.length; i++) {
+            items[i].classList.remove("autocomplete-active");
+        }
+    }
+
+    function closeAllLists(element) {
+        const items = document.getElementsByClassName("autocomplete-items");
+        for (let i = 0; i < items.length; i++) {
+            if (element != items[i] && element != input) {
+                items[i].parentNode.removeChild(items[i]);
+            }
+        }
+    }
+
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+    });
+}
+
+autocomplete(document.getElementById('writeYourMessage'));
+
+
+
+        // Função para redirecionar para a página de mensagem privada com o ID do usuário como parâmetro
+        function redirectToPrivateMessage(id) {
+            window.location.href = `/mensagem_privada?id=${id}`;
+        }
+
+        fetch('/nomes_conversas')
+    .then(response => response.json())
+    .then(data => {
+        // Ordenar as mensagens por ordem de tempo (timestamp)
+        const sortedMessages = Object.values(data.lastMessages).sort((a, b) => {
+            return new Date(b.timestamp) - new Date(a.timestamp);
+        });
+
+        const messageContainer = document.getElementById('message-container');
+        const searchInput = document.getElementById('writeYourMessage');
+        const autocompleteResults = document.getElementById('autocomplete-results');
+
+        // Verifica se há dados recebidos
+        if (!sortedMessages || sortedMessages.length === 0) {
+            // Adicione uma mensagem indicando que não há conversas
+            messageContainer.classList.add('no-messages');
+            messageContainer.innerHTML = '<p>Nenhuma conversa encontrada.</p>';
+            return;
+        }
+
+        // Limpar o conteúdo anterior (caso haja)
+        messageContainer.innerHTML = '';
+
+        // Adicionar links para cada pessoa na página
+        sortedMessages.forEach(message => {
+            const link = document.createElement('a');
+            link.href = `javascript:void(0);`;
+            link.onclick = () => redirectToPrivateMessage(message.id);
+            link.innerHTML = `
+                <div class="message-container">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td rowspan="3" style="width: 35px;">
+                                <div class="post__avatar"><img src="${message.profile_image}" alt="perfil" style="width: 100%;"></div>
+                            </td>
+                            <td><div class="sender-name">${message.nome}</div></td>
+                            <td><div class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</div></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><div class="message-content">${message.mensagem}</div></td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+            messageContainer.appendChild(link);
+        });
+    });
+
+
+
+// Adicionar evento de clique aos itens da lista de sugestões
+document.getElementById("autocomplete-results").addEventListener("click", function(e) {
+    let target = e.target;
+    // Verificar se o clique foi em um item da lista de sugestões
+    if (target.tagName === "DIV" && target.parentElement.id === "autocomplete-results") {
+        let input = target.getElementsByTagName("input")[0];
+        if (input) {
+            let nome = input.value;
+
+            // Chamar a função do backend para converter nome para ID
+            fetch(`/nome_para_id/${nome}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        redirectToPrivateMessage(data.id);
+                    } else {
+                        console.error('Usuário não encontrado');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar ID do usuário:', error);
+                });
+        }
+    }
+});
+
+
+// Função para carregar a foto de perfil na tab bar
+function carregarFotoPerfil() {
+        $.get("/api/perfil", function(data) {
+            if (data.profile_image) {
+                $(".nav_perfil img").attr("src", data.profile_image);
+            }
+        });
+    }
+
+    // Chamar a função para carregar a foto de perfil quando a página carregar
+    $(document).ready(function() {
+        carregarFotoPerfil();
+    });
+    </script>
+</body>
+</html>

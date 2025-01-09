@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Perfil</title>
+    <link rel="icon" type="image/x-icon" href="images/logo_1.png">
+    <link rel="stylesheet" href="css/perfil.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/publicacao.js"></script>
+
+
+</head>
+<body>
+
+
+
+    <header class="header">
+        <div class="top">
+            <h2 class="nome">Perfil</h2>                
+        </div>
+    </header>
+
+      
+  
+
+
+<div class="container" id="container">
+    <a href="/login"><button id="logoutButton" class="logout-btn">Terminar Sessão</button></a>
+    <div class="profile">
+        <form id="profileImageForm">
+            <input type="file" name="profile_image" id="profileImageInput" style="display: none;">
+            <div class="profile-image-wrapper">
+                <img src="" alt="Profile Image">
+            </div>
+            <button type="button" id="saveProfileImageButton" class="guardar" style="display: none;">Salvar Imagem</button>
+        </form>
+        <h1 id="profileName"></h1> <!-- Nome do perfil atualizado aqui -->
+        <p id="profileStats"></p>
+        <div class="opcoes">
+            <ul class="tabs">
+                <li><a id="sobreTab">SOBRE</a></li>
+                <li class="active"><a id="publicacoesTab">PUBLICAÇÕES</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="conteudo">
+    </div>
+    <div class="publicacao-container" id="publicacao-container" style="display: none;">
+        <div class=adicionar>
+            <h1>Adicionar publicação</h1>
+            <form id="publicacaoForm">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" name="titulo" required>
+
+                <label for="conteudo_texto">Conteúdo:</label>
+                <textarea id="conteudo_texto" name="conteudo_texto" required></textarea>
+
+                <label for="imagem">Imagem (opcional):</label>
+                <input type="file" id="imagem" name="imagem" accept="image/*">
+
+                <label for="categoria_nome">Categoria:</label>
+                <input type="text" id="categoria_nome" name="categoria_nome" autocomplete="off" required>
+
+                <div id="categoria_nomeautocomplete-list" class="autocomplete-items"></div>
+
+                <button type="submit">Publicar</button> <!-- Mudança: removido o onclick -->
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="tab-bar">
+    <div class="line-172"></div>
+    <div class="container-4">
+        <div class="icon">
+            <a href="pagina_inicial"><img src="images/home.png" /></a>
+        </div>
+        <div class="icon">
+            <a href="explorar"><img src="images/search.png" /></a>
+        </div>
+        <div class="icon">
+            <a href="lista_eventos"><img src="images/calendar.png" /></a>
+        </div>
+        <div class="icon">
+            <a href="mensagens_geral"><img src="images/messages.png" /></a>
+        </div>
+        <div class="nav_perfil">
+            <div class="nav_avatar">
+            <a href="perfil"><img src="images/default.png"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+
+
+function scrollToBottom() {
+    window.scrollTo(0,document.body.scrollHeight);
+}
+
+function toggleActiveTab(tab) {
+    const tabs = document.querySelectorAll('.tabs li');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    if (tab === 'sobre') {
+        document.getElementById('sobreTab').parentElement.classList.add('active');
+    } else if (tab === 'publicacoes') {
+        document.getElementById('publicacoesTab').parentElement.classList.add('active');
+    }
+}
+
+function mostrarEditor(sobreAtual) {
+    const editor = document.getElementById('editorSobre');
+    const textoSobre = document.getElementById('textoSobre');
+    const sobreAtualDiv = document.getElementById('sobreAtual');
+    textoSobre.value = sobreAtual;
+    editor.style.display = 'block';
+    sobreAtualDiv.style.display = 'none';
+}
+
+function carregarSobre() {
+    fetch('/perfil_info/' + window.globalId)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Informações do perfil recebidas:', data);
+            const conteudo = document.getElementById('conteudo');
+            conteudo.innerHTML = '';
+
+            const sobreContainer = document.createElement('div');
+            sobreContainer.classList.add('sobre-container');
+
+            const titulo = document.createElement('h2');
+            titulo.style.height = '28px';
+            titulo.style.display = 'flex';
+            titulo.style.alignItems = 'center';
+            titulo.style.justifyContent = 'center';
+            titulo.textContent = 'Sobre';
+
+            if (!window.globalId) {
+                // Criar a imagem
+                const img = document.createElement('img');
+                img.src = 'images/edit.png';
+                img.id = 'editarsobre';
+                img.style.width = 'auto';
+                img.style.height = '28px';
+                img.style.cursor = 'pointer';
+                img.onclick = function() { mostrarEditor(data.sobre) };
+
+                // Adicionar a imagem ao título
+                titulo.appendChild(img);
+            }
+
+            sobreContainer.appendChild(titulo);
+
+            const idade = document.createElement('h3');
+            idade.style.textAlign = 'center';
+            idade.textContent = `Idade: ${data.idade}`;
+            sobreContainer.appendChild(idade);
+
+            const sobreAtual = document.createElement('div');
+            sobreAtual.id = 'sobreAtual';
+            sobreAtual.style.textAlign = 'center';
+            sobreAtual.textContent = data.sobre;
+            sobreContainer.appendChild(sobreAtual);
+
+            const editorSobre = document.createElement('div');
+            editorSobre.id = 'editorSobre';
+            editorSobre.style.display = 'none';
+            sobreContainer.appendChild(editorSobre);
+
+            const textoSobre = document.createElement('textarea');
+            textoSobre.id = 'textoSobre';
+            textoSobre.rows = '4';
+            textoSobre.style.width = '100%';
+            editorSobre.appendChild(textoSobre);
+
+            const guardarButton = document.createElement('button');
+            guardarButton.className = 'guardar';
+            guardarButton.onclick = guardarSobre;
+            guardarButton.textContent = 'Guardar';
+            editorSobre.appendChild(guardarButton);
+
+            conteudo.appendChild(sobreContainer);
+        })
+        .catch(error => {
+            console.error('Erro ao buscar informações do perfil:', error);
+        });
+}
+
+
+function guardarSobre() {
+    const novoSobre = document.getElementById('textoSobre').value;
+    fetch('/editar_sobre', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ sobre: novoSobre })
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Conteúdo sobre atualizado com sucesso.');
+            const editor = document.getElementById('editorSobre');
+            const sobreAtualDiv = document.getElementById('sobreAtual');
+            editor.style.display = 'none';
+            sobreAtualDiv.innerHTML = novoSobre;
+            sobreAtualDiv.style.display = 'block';
+            // Você pode adicionar aqui uma mensagem de sucesso ou outra ação após a atualização bem-sucedida
+        } else {
+            console.error('Erro ao atualizar conteúdo sobre:', response.statusText);
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao enviar dados para atualização:', error);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+    function publicarPublicacao() {
+        // Aqui você pode implementar a lógica para enviar a publicação para o servidor e fazer o que for necessário
+        console.log('Publicação realizada com sucesso!');
+        // Após a publicação, escondemos a div de publicação novamente
+        document.getElementById('publicacao-container').style.display = 'none';
+    }
+
+    function buscarPublicacoesUsuario() {
+        fetch('/publicacoes_usuario/' + window.globalId)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Publicações recebidas:', data);
+            const conteudo = document.getElementById('conteudo');
+            conteudo.innerHTML = '';
+
+            // Criar um título
+            const titulo = document.createElement('h2');
+            titulo.style.height = '28px';
+            titulo.style.display = 'flex';
+            titulo.style.alignItems = 'center';
+            titulo.style.justifyContent = 'center';
+            titulo.textContent = 'Publicações';
+
+            if (!window.globalId) {
+                // Criar a imagem
+                const img = document.createElement('img');
+                img.src = 'images/edit.png';
+                img.id = 'editarpub';
+                img.style.width = 'auto';
+                img.style.height = '28px';
+                img.style.cursor = 'pointer';
+                img.onclick = function() { togglePublicacaoContainer()};
+
+                            // Adicionar a imagem ao título
+                titulo.appendChild(img);
+            }
+
+
+
+            // Adicionar o título ao conteúdo
+            conteudo.appendChild(titulo);
+
+
+            const publicacoesContainer = document.createElement('div');
+            publicacoesContainer.classList.add('grid-container');
+            publicacoesContainer.id = 'publicacoes';
+
+            // Adicionar as publicações do usuário
+            data.publicacoes.forEach(publicacao => {
+                const article = document.createElement('div');
+                article.classList.add('post');
+                article.setAttribute('data-id', publicacao.id);
+
+                // Modifique a criação do postHeader para exibir a atividade da publicação
+                const postHeader = document.createElement('div');
+                postHeader.classList.add('post__header');
+
+                // Chame a função para buscar a atividade com base no categoria_id da publicação
+
+
+                fetch(`/atividade/${publicacao.categoria_id}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Defina o texto do postHeader como a atividade obtida da resposta
+                    const atividade = data.atividade; // Supondo que a atividade é o primeiro item do array de categorias
+                    postHeader.innerHTML = `<div class="hobby" onclick="window.location.href='/explorar?atv=${atividade}'">${atividade}</div>`;
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar a atividade da publicação:', error);
+                    postHeader.textContent = 'Atividade não encontrada'; // Em caso de erro, exibir uma mensagem padrão
+                });
+
+                // Adicione o postHeader ao article
+                article.appendChild(postHeader);
+
+                const postContent = document.createElement('div');
+                postContent.classList.add('post__content');
+
+                // Se for uma imagem, cria um elemento <img> e define o atributo src para o caminho da imagem
+                if (publicacao.imagem_path) {
+                    const img = document.createElement('img');
+                    img.src = publicacao.imagem_path;
+                    postContent.appendChild(img);
+                }
+
+                // Criar um elemento <p> para exibir o conteúdo de texto
+                const textContent = document.createElement('p');
+                textContent.textContent = publicacao.conteudo_texto;
+                postContent.appendChild(textContent);
+
+                if (!window.globalId) {
+                    // Adicionar um botão de exclusão para cada publicação
+                    const deleteButton = document.createElement('a');
+                    deleteButton.innerHTML = `<img src="images/lixo.png" alt="Excluir">`;
+                    deleteButton.classList.add('delete-button');
+                    deleteButton.onclick = function() {
+                        excluirPublicacao(publicacao.id);
+                    };
+                    postContent.appendChild(deleteButton);
+
+                }
+
+
+
+                article.appendChild(postContent);
+                publicacoesContainer.appendChild(article);
+
+            });
+
+            // Adicionar o contêiner de publicações ao conteúdo
+            conteudo.appendChild(publicacoesContainer);
+
+        })
+        .catch(error => {
+            console.error('Erro ao buscar publicações:', error);
+        });
+}
+
+
+
+function togglePublicacaoContainer() {
+    const publicacoesContainer = document.getElementById('publicacoes');
+    const publicacaoContainer = document.getElementById('publicacao-container');
+
+    if (publicacoesContainer.style.display === 'none') {
+        publicacoesContainer.style.display = 'grid';
+        publicacaoContainer.style.display = 'none';
+    } else {
+        publicacoesContainer.style.display = 'none';
+        publicacaoContainer.style.display = 'block';
+        scrollToBottom();
+    }
+}
+
+        
+function excluirPublicacao(publicacaoId) {
+    if (confirm('Tem a certeza de que deseja excluir esta publicação?')) {
+        fetch(`/excluir_publicacao/${publicacaoId}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Publicação excluída com sucesso.');
+                buscarPublicacoesUsuario();
+            } else {
+                console.error('Erro ao excluir publicação:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao excluir publicação:', error);
+        });
+    }
+}
+
+
+    // Função para carregar e exibir dados do perfil
+// Função para carregar e exibir dados do perfil
+function carregarPerfil() {
+    // Realizar uma requisição AJAX para obter os dados do perfil
+    $.get("/api/perfil/" + window.globalId, function(data) {
+        console.log(data);
+        // Atualizar o nome do perfil
+        $("#profileName").text(data.nome);
+
+        // Adicionar imagem de perfil
+        if (data.profile_image) {
+            $(".profile-image-wrapper img").attr("src", data.profile_image);
+        }
+    });
+}
+
+
+
+    // Mostrar input file quando o botão de avatar for clicado
+    $(".profile-image-wrapper").click(function() {
+        if (window.globalId) {
+            return;
+        }
+        $("#profileImageInput").click();
+    });
+
+    // Mostrar botão de salvar e pré-visualizar a imagem selecionada
+    $("#profileImageInput").change(function() {
+        if (window.globalId) {
+            return;
+        }
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $(".profile-image-wrapper img").attr("src", e.target.result);
+            }
+            reader.readAsDataURL(file);
+            $("#saveProfileImageButton").show();
+        }
+    });
+
+
+
+// Adicionar evento para salvar imagem de perfil
+$("#saveProfileImageButton").click(function() {
+    const fileInput = document.getElementById('profileImageInput');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('Selecione uma imagem de perfil');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('profile_image', file);
+
+    $.ajax({
+        url: "/uploadImage",
+        type: "POST",
+        processData: false, // Evitar que o jQuery transforme os dados em uma string de consulta
+        contentType: false, // Não definir o tipo de conteúdo, o navegador o fará automaticamente
+        data: formData,
+        success: function(response) {
+            // Se a imagem foi enviada com sucesso, recarregar o perfil para exibir a nova imagem
+            carregarPerfil();
+            $("#saveProfileImageButton").hide();
+            carregarFotoPerfil();
+        },
+        error: function(xhr, status, error) {
+            console.error("Erro ao enviar imagem de perfil:", error);
+            console.error("Resposta do servidor:", xhr.responseText);
+            alert("Erro ao enviar imagem de perfil. Por favor, tente novamente.");
+        }
+    }); 
+    carregarPerfil();
+});
+
+
+    // Função para carregar a foto de perfil na tab bar
+    function carregarFotoPerfil() {
+        $.get("/api/perfil", function(data) {
+            if (data.profile_image) {
+                $(".nav_perfil img").attr("src", data.profile_image);
+            }
+        });
+    }
+
+    // Chamar a função para carregar a foto de perfil quando a página carregar
+    $(document).ready(function() {
+        // Obter a URL atual
+        var url = new URL(window.location.href);
+
+        // Procurar o ID na URL
+        var idPessoa = url.searchParams.get("id");
+
+        // Tornar a variável global
+        window.globalId = idPessoa;
+
+        if (!window.globalId) {
+            document.getElementById('logoutButton').style.display = 'block';
+        } else {
+            document.getElementById('logoutButton').style.display = 'none';
+        }
+
+        console.log(idPessoa);
+        
+        carregarPerfil();
+        carregarFotoPerfil();
+        buscarPublicacoesUsuario();
+    });
+
+    document.getElementById('sobreTab').addEventListener('click', function() {
+    toggleActiveTab('sobre');
+    carregarSobre();
+    });
+
+    document.getElementById('publicacoesTab').addEventListener('click', function() {
+        toggleActiveTab('publicacoes');
+        buscarPublicacoesUsuario();
+    });
+
+
+    
+
+
+    document.getElementById('publicacaoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('/adicionar_publicacao', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    buscarPublicacoesUsuario();
+                    togglePublicacaoContainer();
+                    this.reset();
+                    
+                    
+                } else {
+                    alert('Erro ao adicionar publicação.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao adicionar publicação.');
+            });
+        });
+
+
+    // Função para autocomplete
+    function autocomplete(input) {
+        let currentFocus = -1;
+
+        input.addEventListener("input", function(e) {
+            let val = this.value;
+            closeAllLists();
+            currentFocus = -1;
+
+            if (!val) { return false; }
+
+            fetch(`/buscarCategorias?termo=${val}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Dados recebidos:', data);
+                    const suggestions = data.categorias;
+                    const autocompleteList = document.getElementById('categoria_nomeautocomplete-list');
+                    autocompleteList.innerHTML = ''; // Limpa a lista de sugestões
+
+                    // Adicionar sugestões à lista de autocomplete
+                    suggestions.forEach(suggestion => {
+                        const item = document.createElement("DIV");
+                        item.innerHTML = `<strong>${suggestion.substr(0, val.length)}</strong>${suggestion.substr(val.length)}`;
+                        item.innerHTML += `<input type='hidden' value='${suggestion}'>`;
+                        item.addEventListener("click", function(e) {
+                            input.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists(1);
+                        });
+                        autocompleteList.appendChild(item);
+                    });
+                })
+                .catch(error => console.error('Erro ao buscar categorias:', error));
+                
+        });
+
+        input.addEventListener("keydown", function(e) {
+            let list = document.getElementById("categoria_nomeautocomplete-list").getElementsByTagName("div");
+            if (e.keyCode === 40) { // Seta para baixo
+                currentFocus++;
+                addActive(list);
+            } else if (e.keyCode === 38) { // Seta para cima
+                currentFocus--;
+                addActive(list);
+            } else if (e.keyCode === 13) { // Enter
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (list) list[currentFocus].click();
+                } else if (list.length === 1) {
+                    list[0].click();
+                }
+            }
+        });
+
+        function addActive(items) {
+            if (!items) return false;
+            removeActive(items);
+            if (currentFocus >= items.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (items.length - 1);
+            items[currentFocus].classList.add("autocomplete-active");
+        }
+
+        function removeActive(items) {
+            for (let i = 0; i < items.length; i++) {
+                items[i].classList.remove("autocomplete-active");
+            }
+        }
+
+        function closeAllLists(element) {
+            
+            const items = document.getElementById("categoria_nomeautocomplete-list").getElementsByTagName("div");
+            if (element === 1) {
+                while(items.length > 0) {
+                items[0].parentNode.removeChild(items[0]);
+                }
+            }else{
+                for (let i = 0; i < items.length; i++) {
+                    items[i].parentNode.removeChild(items[i]);
+                }
+            }
+        }
+
+        document.addEventListener("click", function (e) {
+            closeAllLists(1);
+        });
+    }
+
+    // Inicializar o autocomplete para o campo de entrada de categoria
+    autocomplete(document.getElementById("categoria_nome"));
+</script>
+
+</body>
+</html>

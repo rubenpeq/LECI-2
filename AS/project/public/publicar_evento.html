@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline' https://ajax.googleapis.com; 
+        img-src 'self' data:; 
+        style-src 'self' 'unsafe-inline';
+    ">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="images/logo_1.png">
+    <link rel="stylesheet" href="css/publicar_evento.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+
+  <body>
+
+    <header class="header">
+      <div class="top">
+        <a href="lista_eventos" class="back-link">
+          <img class="backarrow" src="images/back_arrow.png">
+        </a>
+        <h2 class="nome">Publicar Evento</h2>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <form action="/add-event" method="post" enctype="multipart/form-data">
+        <div class="text-input-container">
+            <input type="text" name="event_name" required>
+            <div class="text-input">Título do evento</div>
+        </div>
+        <div class="text-input-container">
+            <input type="date" name="date" required>
+            <div class="text-input"></div>
+        </div>
+        <div class="text-input-container">
+            <input type="time" name="time" required>
+            <div class="time-input">h</div>
+        </div>
+        <div class="text-input-container">
+            <input type="text" name="location" required>
+            <div class="text-input">Localização</div>
+        </div>
+        <div class="text-input-container">
+            <input type="text" name="description" required>
+            <div class="text-input">Descrição</div>
+        </div>
+        <div class="text-input-container">
+            <input type="file" name="image" required accept="image/png, image/jpg, image/jpeg">
+            <div class="text-input">Imagem</div>
+        </div>
+        <button type="submit" class="publish-button">Publicar</button>
+      </form>
+
+      <script>
+        $(document).ready(function() {
+            $('form').on('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/add-event',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log(response); // Log success response
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText); // Log error response
+                    }
+                });
+            });
+        });
+        </script>
+        
+    </main>
+
+    <footer>
+        <div class="tab-bar">
+          <div class="footer-container">
+            <div class="icon">
+              <a href="pagina_inicial">
+                <img src="images/home.png" />
+              </a>
+            </div>
+            <div class="icon">
+              <a href="explorar">
+                <img src="images/search.png" />
+              </a>
+            </div>
+            <div class="icon">
+              <a href="lista_eventos">
+                <img src="images/calendar.png" />
+              </a>
+            </div>
+            <div class="icon">
+              <a href="mensagens_geral">
+                <img src="images/messages.png" />
+              </a>
+            </div>
+            <div class="nav_perfil">
+              <a href="perfil">
+                <a href="perfil"><img src="images/default.png"></a>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+  
+      <script>
+        // Função para carregar a foto de perfil na tab bar
+      function carregarFotoPerfil() {
+          $.get("/api/perfil", function(data) {
+              if (data.profile_image) {
+                  $(".nav_perfil img").attr("src", data.profile_image);
+              }
+          });
+      }
+  
+      // Chamar a função para carregar a foto de perfil quando a página carregar
+      $(document).ready(function() {
+          carregarFotoPerfil();
+      });
+      </script>
+    </body>
+</html>

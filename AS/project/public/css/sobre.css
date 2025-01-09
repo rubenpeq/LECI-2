@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.profile {
+    text-align: center;
+    margin: 5% 5% 5% 0%;
+}
+.profile img {
+    border-radius: 50%;
+}
+.tabs {
+    justify-content: center;
+    list-style-type: none;
+    padding: 0;
+}
+.tabs li {
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin: 0 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tabs a {
+    text-decoration: none;
+    color: inherit;
+}
+.tabs .active {
+    background-color: #ddd;
+    color: #000;
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    justify-content: center;
+    gap: 20px;
+}
+.grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    padding: 10px;
+}
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+.opcoes {
+    text-align: center;
+}
+.opcoes .tabs {
+    display: inline-block;
+}
+/* Estilos para a seção "Sobre" */
+.sobre {
+    background-color: #f9f9f9; /* Fundo da seção */
+    padding: 20px; /* Espaçamento interno */
+    margin-top: 20px; /* Margem superior para separar do conteúdo anterior */
+}
+.nome {
+    font-size: 24px; /* Tamanho do nome */
+    color: #333; /* Cor do nome */
+    margin-bottom: 10px; /* Espaçamento inferior */
+}
+.descricao {
+    font-size: 18px; /* Tamanho da descrição */
+    color: #666; /* Cor da descrição */
+}
+

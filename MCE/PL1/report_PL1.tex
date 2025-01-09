@@ -1,0 +1,121 @@
+\documentclass{report}
+\usepackage{tabularx} % extra features for tabular environment
+\usepackage{amsmath}  % improve math presentation
+\usepackage{graphicx} % takes care of graphic including machinery
+\usepackage[margin=1in,letterpaper]{geometry} % decreases margins
+\usepackage{cite} % takes care of citations
+\usepackage[final]{hyperref} % adds hyper links inside the generated pdf file
+\usepackage[utf8]{inputenc}
+
+\graphicspath{ {./images/} }
+
+\title{MCE - Movimento de Projéteis}
+\author{\texttt{102480} - Rúben Pequeno
+\and 
+\texttt{nmec} - Filipe Sousa
+\and
+\texttt{932779} - António Moreira}
+\date{\today}
+\renewcommand*\contentsname{Conteúdos}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\chapter{Introdução}
+
+\section{Objetivos}
+	Este trabalho tem como objetivo verificar o comportamento de diversos tipos de movimento de projéteis tais como 
+	\renewcommand{\theenumi}{\Alph{enumi}}
+	\begin{enumerate}
+		\item{Determinar a velocidade inicial do projétil e calcular o respetivo erro}
+		\item{Verificar a dependência do alcance com o ângulo de lançamento}
+		\item{Determinar a velocidade inicial do projétil utilizando um pêndulo balístico}
+	\end{enumerate}
+
+
+\section{Resultados Esperados vs Resultados Obtidos}
+	Comparando os dados obtidos com os dados esperados, podemos observar que apesar de algumas
+	diferenças nos valores devido a possiveis erros de medição e de execução experimental, verifica-se
+	que o comportamento do projétil está de acordo com o resultado esperado.
+	
+
+\chapter{Parte A}
+
+\section{Preparação}
+	Para determinar-mos a velocidade inicial do projétil, tivemos de fazer uma montagem experimental
+	 utilizando parte dos materiais fornecidos (lançador de projéteis, sensores de passagem e a esfera plástica),
+	 fixando a base do lançador de projéteis à mesa com um grampo e colocando o LP na posição horizontal. De seguida, 
+	 ligar o sistema de controlo à fonte de alimentação e finalmente, colocar o primeiro sensor imediatamente 
+	 em frente ao LP e garantir que os 2 sensores estão ligados ao sistema de controlo.
+	 Após efetuar a montagem corretamente, mede-se a distância entre os 2 sensores e colocar a 
+	 esfera no LP na posição de "SHORT RANGE" com a ajuda de uma vareta de carregar.
+	 Agora, no sistema de controlo, colocar na posição "TWO GATES" e carregar em Start/Stop 
+	 de modo a obter o tempo de passagem do projétil. Finalmente lança-se o projétil, registando 
+	 o tempo indicado pelo sistema de controlo e repete-se o procedimento anterior mais 4 vezes para obter 
+	 5 medidas.
+
+
+\begin{figure}
+	\centering
+	\includegraphics{part_a.png}
+	\caption{Esquema da montagem experimental (experiência A). 1- Lançador de projéteis (LP); 2-
+	Base de fixação para o LP; 3-Sensor de passagem (inicia a contagem do tempo); 4-Sensor de
+	passagem (termina a contagem do tempo); 5-Sistema de controlo dos sensores.}
+	\label{fig:parteA}
+\end{figure}
+
+\section{Dados}
+
+\section{Erros}
+
+\chapter{Parte B}
+
+\section{Preparação}
+
+	Para esta experiência foi aproveitado a montagem feita anteriormente, apenas tirando
+	os sensores de passagem, pois já não será necessário calcular a velocidade do projétil 
+	e adicionando um alvo (sensor de impacto), de modo a podermos medir a distância percorrida 
+	pelo projétil, a um determinado angulo.
+	Para obter os dados, coloca-se o LP a um de 30º com a horizontal, seguidamente coloca-se o alvo com 
+	um conjunto de papel químico e papel milimétrico. De seguida lança-se o projétil no modo "SHORT RANGE", 
+	registando o alcance e o ângulo de lançamento e repetir a experiência mais 2 vezes.
+	Posteriormente, repete-se o procedimento referido anteriormente com os seguintes ângulos: 34º, 38º, 40º e 43º.
+	Por fim, mede-se rigurosamente a altura a que a esfera foi lançada, em relação à bancada.
+
+\begin{figure}
+	\centering
+	\includegraphics{part_b.png}
+	\caption{Esquema da montagem experimental (experiência B). 1-Lançador de projéteis (LP); 2-
+	Base de fixação para o LP; 3-Alvo.}
+\end{figure}
+
+\section{Dados}
+
+\section{Erros}
+
+\chapter{Parte C}
+
+	Esta ultima experiência, começa-se pela preparação dos equipamentos de modo a lançar o projétil 
+	para o pêndulo balístico e medindo as massas do pêndulo e esfera, tal como o comprimento do pêndulo.
+	Após completar a preparação, lança-se o projétil em modo "SHORT RANGE", fazendo a medição do ângulo 
+	máximo atingido pelo pêndulo. Por fim, repete-se a experiência mais 4 vezes para obter 5 medidas do ângulo.
+
+\section{Preparação}
+\begin{figure}
+	\centering
+	\includegraphics{part_c.png}
+	\caption{Esquema da montagem experimental (experiência C).}
+\end{figure}
+
+\section{Dados}
+
+\section{Erros}
+
+\chapter{Conclusões}
+Conclusões.
+
+\end{document}

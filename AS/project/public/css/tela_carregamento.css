@@ -1,0 +1,24 @@
+.tela-de-carregamento .container {
+  overflow-wrap: break-word;
+  font-family: 'SF Pro Text', 'Roboto Condensed';
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.3px;
+  color: #171717;
+}
+.tela-de-carregamento .logo-1 {
+  background: url('/images/logo_1.png') 50% / cover no-repeat;
+  margin: 0 auto; /* Centraliza o logo horizontalmente */
+  align-self: center; /* Centraliza o logo verticalmente */
+  width: 209px;
+  height: 198px;
+}
+.tela-de-carregamento {
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Alinha o conteúdo verticalmente ao centro */
+  align-items: center; /* Alinha o conteúdo horizontalmente ao centro */
+  height: 100vh; /* Faz com que o div tenha a altura total da janela de visualização */
+  box-sizing: border-box;
+}

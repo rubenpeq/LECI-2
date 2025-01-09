@@ -1,0 +1,252 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Vars */
+:root {
+    --primary: hsl(0, 0%, 100%);
+    --secondary: hsl(0, 0%, 98%);
+    --border: hsl(0, 0%, 86%);
+
+    --story-border: hsl(0, 0%, 78%);
+    --img-border: hsla(0, 0%, 0%, 0.1);
+
+    --text-dark: hsl(0, 0%, 15%);
+    --text-light: hsl(0, 0%, 60%);
+
+    --like: hsl(355, 82%, 61%);
+    --link: hsl(204, 100%, 48%);
+
+    --header-height: 44px;
+    --footer-height: 5%;
+}
+:root.darkTheme {
+    --primary: hsl(0, 0%, 0%);
+    --secondary: hsl(0, 0%, 2%);
+    --border: hsl(0, 0%, 15%);
+
+    --story-border: hsl(0, 0%, 44%);
+    --img-border: hsla(0, 0%, 100%, 0.1);
+
+    --text-dark: hsl(0, 0%, 98%);
+    --text-light: hsl(0, 0%, 60%);
+}
+
+.nav_perfil{
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    margin: 0.4px 0 4px 0;
+    display: flex;
+    width: 23.1px;
+    height: 23.4px;
+    box-sizing: border-box;
+}
+
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+svg {
+    display: block;
+}
+
+img {
+    max-width: 100%;
+}
+
+/* Header Navbar */
+.header {
+    width: 100%;
+    height: 7vh;
+    background-color: hsl(0, 0%, 100%);
+
+    display: grid;
+
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.header::after {
+    content: '';
+    position: relative;
+    bottom: 0;
+
+    width: 100%;
+    height: 1px;
+    background-color: hsl(0, 0%, 86%);
+}
+
+
+.back-link {
+    position: absolute;
+    left: 10px; /* Adjust the distance from the left edge */
+    top: 15px; /* Adjust the distance from the top */
+}
+
+.backarrow {
+    width: 35px; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.top {
+    display: flex;
+    position: relative; /* Adicionado */
+    height: 7vh;
+    align-items: center;
+}
+
+.top .nome {
+    position: absolute; /* Adicionado */
+    left: 50%; /* Adicionado */
+    transform: translateX(-50%); /* Adicionado */
+}
+
+/* Main Content */
+.main-container {
+    padding: 20px;
+    background-color: var(--secondary);
+    flex: 1;
+    padding-bottom: 80px;
+    min-height: 100vh;
+}
+
+.text-input-container {
+    width: 25%;
+    position: relative;
+    height: 40px;
+    line-height: 40px;
+    margin: 25px;
+    padding: 25px;
+    left: 35%;
+}
+
+.text-input{
+    position: absolute;
+    font-size: 1.4em;
+    color: black;
+    padding: 0 25px;
+    margin: 0 20px;
+    background-color: var(--secondary);
+    transition: 0.2s ease;
+}
+
+.time-input{
+    position: absolute;
+    font-size: 1.4em;
+    color: black;
+    padding: 0 25px;
+    margin: 0 20px;
+    background-color: var(--secondary);
+    transition: 0.2s ease;
+    left: 19%;
+}
+
+input {
+    position: absolute;
+    width: 100%;
+    outline: none;
+    font-size: 1.7em;
+    padding: 0 30px;
+    line-height: 40px;
+    border-radius: 12px;
+    border: 2px solid black;
+    background: transparent;
+    transition: 0.1s ease;
+    z-index: 1111;
+}
+
+input:focus,
+input:valid{
+    color: cadetblue;
+    border: 4px solid cadetblue;
+}
+
+input:focus + .text-input,
+input:valid + .text-input{
+    color: cadetblue;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 12px;
+    transform: translate(-15px, -16px) scale(0.80);
+    z-index: 1111;
+}
+
+.publish-button {
+    position: relative;
+    bottom: var(--footer-height);
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 15px;
+    padding: 10px 24px;
+    border-radius: 12px;
+    background-color: cadetblue;
+    color: var(--primary);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    z-index: 0;
+  }
+  
+  .publish-button:hover {
+    background-color: var(--primary);
+    color: cadetblue;
+    border: 2px solid cadetblue;
+  }
+
+/* Footer Bar*/
+
+.tab-bar {
+    position: fixed;
+    bottom: 0; /* Posiciona a barra de abas no final da página */
+    height: var(--footer-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra os elementos filhos verticalmente */
+    align-items: center; /* Centra os elementos filhos horizontalmente */
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--primary);
+    border: 1px solid var(--border); /* Adiciona uma borda preta */
+  }
+  
+  
+.icon {
+    margin: 0.4px 0 4px 0;
+    display: flex;
+    width: 23.1px;
+    height: 23.4px;
+    box-sizing: border-box;
+  }
+  
+  
+.footer-container {
+    margin: 0 0px;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    box-sizing: border-box;
+    align-self: center;
+    max-width: 600px;
+  }
+  
+  
+.profile-image img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Faz a imagem oval */
+    object-fit: cover; /* Garante que a imagem cubra toda a área */
+  }
+  

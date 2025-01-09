@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hobbify - Eventos</title>
+    <link rel="icon" type="image/x-icon" href="images/logo_1.png">
+    <link rel="stylesheet" href="css/lista_eventos.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/lista_eventos.js"></script>
+  </head>
+
+  <body>
+
+    <header class="header">
+      <div class="top">
+        <h2 class="nome">Eventos</h2>
+        <a href="publicar_evento" class="publish-link">
+          <img class="publish-img" src="images/publish.png">
+        </a>     
+      </div>
+    </header>
+
+    <main class="main-container">
+      <div class="events-wrapper">
+        <div class="toggleEvents" id="eventSwitch">
+          <input type="checkbox" class="toggleCheckbox" id="eventToggle">
+          <label for="eventToggle" class="toggleContainer">
+            <div>Upcoming</div>
+            <div>Past Events</div>
+          </label>
+        </div>
+        <div class="events-container" id="eventsContainer"></div>
+      </div>
+      <button class="load-more" onclick="loadMoreEvents()" id="loadMoreButton">Load More</button>
+    </main>
+
+    <footer class="footer">
+      <div class="tab-bar">
+        <div class="footer-container">
+          <div class="icon">
+            <a href="pagina_inicial">
+              <img src="images/home.png" />
+            </a>
+          </div>
+          <div class="icon">
+            <a href="explorar">
+              <img src="images/search.png" />
+            </a>
+          </div>
+          <div class="icon">
+            <a href="lista_eventos">
+              <img src="images/calendar.png" />
+            </a>
+          </div>
+          <div class="icon">
+            <a href="mensagens_geral">
+              <img src="images/messages.png" />
+            </a>
+          </div>
+          <div class="nav_perfil">
+            <div class="nav_avatar">
+            <a href="perfil"><img src="images/default.png"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    
+    <script>
+      // Função para carregar a foto de perfil na tab bar
+    function carregarFotoPerfil() {
+        $.get("/api/perfil", function(data) {
+            if (data.profile_image) {
+                $(".nav_perfil img").attr("src", data.profile_image);
+            }
+        });
+    }
+
+    // Chamar a função para carregar a foto de perfil quando a página carregar
+    $(document).ready(function() {
+        carregarFotoPerfil();
+    });
+    </script>
+  </body>
+</html>

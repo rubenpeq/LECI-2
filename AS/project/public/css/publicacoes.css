@@ -1,0 +1,62 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0; /* Remove as margens padrão do corpo */
+    padding: 0; /* Remove o preenchimento padrão do corpo */
+}
+.container {
+    max-width: 1200px; /* Define a largura máxima do contêiner */
+    margin: 0 auto; /* Centraliza o contêiner na tela */
+    padding: 20px; /* Adiciona um espaçamento interno ao contêiner */
+}
+.profile {
+    text-align: center;
+    margin: 5% 5% 5% 0%;
+}
+.profile img {
+    border-radius: 50%;
+}
+.tabs {
+    justify-content: center; /* Centraliza as abas */
+    list-style-type: none;
+    padding: 0;
+}
+.tabs li {
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin: 0 10px; /* Adiciona espaço entre as abas */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tabs a {
+    text-decoration: none;
+    color: inherit;
+}
+.tabs .active {
+    background-color: #ddd;
+    color: #000;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    justify-content: center;
+    gap: 20px; /* Aumenta o espaço entre as imagens */
+}
+.grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    padding: 10px;
+}
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+.opcoes {
+    text-align: center;
+}
+
+.opcoes .tabs {
+    display: inline-block;
+}

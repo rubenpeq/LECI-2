@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explorar</title>
+  <link rel="icon" type="image/x-icon" href="images/logo_1.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=ABeeZee:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/explorar.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+  <div style="background-color: white; height: 12vh;">
+  <header class="header">
+    <div class="top">
+      <!-- altera para quando a imagem for clicada ir para a página exprorar-->
+      <a href="explorar" class="back">
+        <img id="grid" class="grid" src="images/back_arrow.png" style="width: 35px; height: 35px;">
+      </a>
+      <h2 class="nome">Explorar</h2>                
+    </div>
+  </header>
+  <div class="search-box-uihut">
+    <input type="text" class="write-your-message" placeholder="Explorar" id="searchInput">
+  </div>
+  </div>
+  <div class="explorar">
+
+    <div class="top-nar" id="hobbies-container"></div>
+    <div class="adicionar-div"><button id="adicionarHobbyBtn" style="display: none;" class="button"><strong></strong></button></div>
+    <div class="low-nar" id="categorias-container"></div>
+  </div>
+  <div class="tab-bar">
+    <div class="line-172"></div>
+    <div class="container-4">
+      <div class="icon">
+        <a href="pagina_inicial">
+          <img src="images/home.png" />
+        </a>
+      </div>
+      <div class="icon">
+        <a href="explorar">
+          <img src="images/search.png" />
+        </a>
+      </div>
+      <div class="icon">
+        <a href="lista_eventos">
+          <img src="images/calendar.png" />
+        </a>
+      </div>
+      <div class="icon">
+        <a href="mensagens_geral">
+          <img src="images/messages.png" />
+        </a>
+      </div>
+      <div class="nav_perfil">
+        <div class="nav_avatar">
+        <a href="perfil"><img src="images/default.png"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+// Função para buscar publicações relacionadas a uma categoria
+function buscarPublicacoes(categoria) {
+    fetch(`/publicacoes/${categoria}`)
+        .then(response => response.json())
+        .then(data => {
+            verificarHobby(categoria);
+            const input = document.getElementById("searchInput");
+            input.value = categoria;
+            console.log('Publicações recebidas:', data);
+
+            const lowNarContainer = document.getElementById('categorias-container');
+            lowNarContainer.innerHTML = '';
+
+            const listaPublicacoes = document.createElement('ul');
+            listaPublicacoes.classList.add('lista-publicacoes');
+
+            const promises = data.publicacoes.map(publicacao => {
+                return fetch(`/id_para_nome/${publicacao.perfil_id}`)
+                    .then(response => response.json())
+                    .then(userData => {
+                        return {
+                            ...publicacao,
+                            nome_usuario: userData.nome
+                        };
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar nome do usuário:', error);
+                        return {
+                            ...publicacao,
+                            nome_usuario: 'Usuário desconhecido'
+                        };
+                    });
+            });
+
+            Promise.all(promises)
+            .then(publicacoesComNomes => {
+                publicacoesComNomes.forEach(publicacao => {
+                    $.get("/api/perfil/" + publicacao.perfil_id, function(profileData) {
+                        const itemLista = document.createElement('li');
+                        const article = document.createElement('article');
+                        article.classList.add('post');
+
+                        const nomeLength = profileData.nome.length * 10; // Multiplicamos por 10 para converter o comprimento do nome em pixels
+
+                        // Solicitação GET para buscar o nome da atividade
+                        $.get("/atividade/" + publicacao.categoria_id, function(atividadeData) {
+                            const nomeAtividade = atividadeData.atividade;
+
+                            let postHtml = `
+                              <div class="post__header">
+                                  <div class="post__profile">
+                                      <a class="post__avatar">
+                                          <img src="${profileData.profile_image}" alt="User Picture" />
+                                      </a>
+                                      <a class="post__user" href="/perfil" id="linkPerfil">${profileData.nome}</a>
+                                  </div>
+                                  <div class="hobby" style="margin-right: ${nomeLength}px;">${nomeAtividade}</div>
+                                  <button class="post__more-options">
+                                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <circle cx="6.5" cy="11.5" r="1.5" fill="var(--text-dark)" />
+                                          <circle cx="12" cy="11.5" r="1.5" fill="var(--text-dark)" />
+                                          <circle cx="17.5" cy="11.5" r="1.5" fill="var(--text-dark)" />
+                                      </svg>
+                                  </button>
+                              </div>
+                              <div class="post__content">
+                                  <div class="post__medias">
+                          `;
+                          if (publicacao.imagem_path) {
+                            postHtml += `<img class="post__media" src="${publicacao.imagem_path}" alt="${publicacao.conteudo_texto}" />`;
+                          }
+
+                          if (publicacao.conteudo_texto) {
+                              postHtml += `<p>${publicacao.conteudo_texto}</p>`;
+                          }
+
+                          postHtml += `</div></div></article>`;
+                          article.innerHTML += postHtml;
+
+                          itemLista.appendChild(article);
+                          listaPublicacoes.appendChild(itemLista);
+
+                          document.getElementById('linkPerfil').addEventListener('click', function(e) {
+                            e.preventDefault(); // Previne o comportamento padrão do clique
+                            var newHref = "/perfil?id=" + publicacao.perfil_id;
+                            e.target.href = newHref;
+                            window.location.href = newHref; // Redireciona manualmente
+                        });
+                            });
+                    });
+                });
+
+                lowNarContainer.appendChild(listaPublicacoes);
+            })
+                .catch(error => {
+                    console.error('Erro ao processar publicações:', error);
+                });
+        })
+        .catch(error => {
+            console.error('Erro ao buscar publicações:', error);
+        });
+}
+
+
+
+    
+    // Função para buscar e exibir os hobbies do usuário
+function exibirHobbies() {
+  fetch('/atividades')
+    .then(response => response.json())
+    .then(data => {
+      const hobbiesContainer = document.getElementById('hobbies-container');
+      hobbiesContainer.innerHTML = '';
+      console.log(data);
+      
+      if(data.atividades.length > 0){
+        data.atividades.forEach(atividade => {
+          const button = document.createElement('button');
+          button.classList.add('button');
+          button.textContent = atividade;
+          hobbiesContainer.appendChild(button);
+
+          button.addEventListener('click', function() {
+            document.querySelectorAll('.button').forEach(btn => {
+              btn.classList.remove('clicked');
+            });
+            this.classList.add('clicked');
+            buscarPublicacoes(atividade);
+          });
+        });
+        hobbiesContainer.style.display = 'block';
+    
+    
+      }else {
+        hobbiesContainer.style.display = 'none';
+      }
+    })
+    .catch(error => {
+      console.error('Erro ao recuperar hobbies:', error);
+    });
+}
+
+    
+    function buscarCategorias(hobby) {
+      fetch(`/categorias/${hobby}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log('Dados recebidos:', data);
+    
+          const categoriasContainer = document.getElementById('categorias-container');
+          categoriasContainer.innerHTML = '';
+    
+    const table = document.createElement('table');
+    table.classList.add('tabela');
+
+    for (let i = 0; i < 4; i++) {
+      const row = document.createElement('tr');
+      for (let j = 0; j < 2; j++) {
+        const index = i * 2 + j;
+        if (index < data.categorias.length) {
+          const cell = document.createElement('td');
+          const button = document.createElement('button');
+          button.textContent = data.categorias[index];
+          button.classList.add('categoria-button');
+          cell.appendChild(button);
+          row.appendChild(cell);
+        }
+      }
+      table.appendChild(row);
+    }
+    categoriasContainer.appendChild(table);
+
+    document.querySelectorAll('.categoria-button').forEach(button => {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.categoria-button').forEach(btn => {
+          btn.classList.remove('clicked');
+        });
+        this.classList.add('clicked');
+        buscarPublicacoes(this.textContent);
+      });
+    });
+  })
+  .catch(error => {
+    console.error('Erro ao buscar categorias:', error);
+  });
+}
+
+function autocomplete(input) {
+let currentFocus = -1;
+input.addEventListener("input", function(e) {
+  let val = this.value;
+  closeAllLists();
+  currentFocus = -1;
+
+  if (!val) { return false; }
+
+  fetch(`/buscarCategorias?termo=${val}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log('Dados recebidos:', data);
+      const suggestions = data.categorias;
+      const container = document.createElement("DIV");
+      container.setAttribute("id", this.id + "autocomplete-list");
+      container.setAttribute("class", "autocomplete-items");
+      this.parentNode.appendChild(container);
+
+      // Adicionar hobbies como sugestões
+      fetch('/hobbiespesq')
+        .then(response => response.json())
+        .then(data => {
+          data.hobbies.forEach(hobby => {
+            if (hobby.toLowerCase().includes(val.toLowerCase())) {
+              const item = document.createElement("DIV");
+              item.textContent = hobby;
+              item.addEventListener("click", function(e) {
+                input.value = hobby;
+                closeAllLists();
+                buscarCategorias(hobby);
+              });
+              container.appendChild(item);
+            }
+          });
+
+          // Adicionar atividades como sugestões
+          suggestions.forEach(suggestion => {
+            if (!data.hobbies.includes(suggestion)) {
+              const item = document.createElement("DIV");
+              item.innerHTML = `<strong>${suggestion.substr(0, val.length)}</strong>${suggestion.substr(val.length)}`;
+              item.innerHTML += `<input type='hidden' value='${suggestion}'>`;
+              item.addEventListener("click", function(e) {
+                input.value = this.getElementsByTagName("input")[0].value;
+                closeAllLists();
+                buscarPublicacoes(input.value);
+              });
+              container.appendChild(item);
+            }
+          });
+        })
+        .catch(error => console.error('Erro ao recuperar hobbies:', error));
+    })
+    .catch(error => console.error('Erro ao buscar categorias:', error));
+});
+
+input.addEventListener("keydown", function(e) {
+  let list = document.getElementById(this.id + "autocomplete-list");
+  if (list) list = list.getElementsByTagName("div");
+  if (e.keyCode === 40) { // Seta para baixo
+    currentFocus++;
+    addActive(list);
+  } else if (e.keyCode === 38) { // Seta para cima
+    currentFocus--;
+    addActive(list);
+  } else if (e.keyCode === 13) { // Enter
+    e.preventDefault();
+    console.log(currentFocus);
+    if (currentFocus > -1) {
+      if (list) list[currentFocus].click();
+    } else if (currentFocus == -1){
+      if (list) list[0].click();
+    }else {
+      buscarPublicacoes(this.value); // Busca publicações diretamente pelo termo digitado
+    }
+  }
+
+  console.log(currentFocus);
+});
+
+function addActive(items) {
+  if (!items) return false;
+  removeActive(items);
+  if (currentFocus >= items.length) currentFocus = 0;
+  if (currentFocus < 0) currentFocus = (items.length - 1);
+  items[currentFocus].classList.add("autocomplete-active");
+}
+
+function removeActive(items) {
+  for (let i = 0; i < items.length; i++) {
+    items[i].classList.remove("autocomplete-active");
+  }
+}
+
+function closeAllLists(element) {
+  const items = document.getElementsByClassName("autocomplete-items");
+  for (let i = 0; i < items.length; i++) {
+    if (element != items[i] && element != input) {
+      items[i].parentNode.removeChild(items[i]);
+    }
+  }
+}
+
+document.addEventListener("click", function (e) {
+  closeAllLists(e.target);
+});
+}
+
+autocomplete(document.getElementById("searchInput"));
+
+// Função para verificar se o hobby já está presente na base de dados
+function verificarHobby(hobby) {
+    // Enviar uma solicitação GET para verificar se o hobby já está na base de dados
+    fetch(`/verificar-atividade?atividade=${hobby}`)
+        .then(response => response.json())
+        .then(data => {
+            const botao = document.getElementById('adicionarHobbyBtn');
+            if (!data.existe) {
+                botao.textContent = 'Adicionar';
+            } else {
+                botao.textContent = 'Remover';
+            }
+            botao.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Erro ao verificar hobby:', error);
+        });
+}
+
+// Evento de input no campo de busca para verificar o hobby
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+// Verificar se a tecla pressionada foi Enter (código 13)
+if (e.keyCode === 13 && !this.value.trim()) {
+        // Verificar se o campo de busca está vazio e a tecla pressionada foi Enter
+        fetchAllHobbies();
+      }
+    });
+
+// Chamar a função para exibir hobbies quando a página carrega
+document.addEventListener('DOMContentLoaded', exibirHobbies);
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get('atv');
+
+    if(myParam) {
+        buscarPublicacoes(myParam);
+    }else{
+      fetchAllHobbies();
+    }
+
+});
+
+
+
+
+// Evento de clique no botão para adicionar um novo hobby
+document.getElementById('adicionarHobbyBtn').addEventListener('click', () => {
+  const novoHobby = document.getElementById('searchInput').value.trim();
+  const botao = document.getElementById('adicionarHobbyBtn');
+  if (novoHobby) {
+    if (botao.textContent === 'Adicionar') {
+      // Enviar uma solicitação POST para adicionar o novo hobby ao perfil do usuário
+      fetch(`/adicionar-atividade?atividade=${novoHobby}`)
+        .then(response => response.text())
+        .then(data => {
+          console.log(data);
+          // Após adicionar o novo hobby, atualizar a lista de hobbies
+          exibirHobbies();
+          verificarHobby(novoHobby);
+        })
+        .catch(error => {
+          console.error('Erro ao adicionar hobby:', error);
+        });
+    } else if (botao.textContent === 'Remover') {
+      // Enviar uma solicitação POST para remover o hobby do perfil do usuário
+      fetch(`/remover-atividade?atividade=${novoHobby}`)
+        .then(response => response.text())
+        .then(data => {
+          console.log(data);
+          // Após remover o hobby, atualizar a lista de hobbies
+          exibirHobbies();
+          verificarHobby(novoHobby);
+        })
+        .catch(error => {
+          console.error('Erro ao remover hobby:', error);
+        });
+    }
+  }
+});
+
+// Função para buscar todos os hobbies disponíveis
+function fetchAllHobbies() {
+  fetch('/hobbiespesq')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('adicionarHobbyBtn').style.display = 'none';
+      console.log(data.hobbies);
+      const categoriasContainer = document.getElementById('categorias-container');
+      categoriasContainer.innerHTML = '';
+
+      if (data.hobbies.length > 0) {
+        const table = document.createElement('table');
+        table.classList.add('tabela');
+
+        for (let i = 0; i < Math.ceil(data.hobbies.length / 2); i++) {
+          const row = document.createElement('tr');
+          for (let j = 0; j < 2; j++) {
+            const index = i * 2 + j;
+            if (index < data.hobbies.length) {
+              const cell = document.createElement('td');
+              const button = document.createElement('button');
+              button.textContent = data.hobbies[index];
+              button.classList.add('hobby-button');
+              button.setAttribute("id", data.hobbies[index]);
+              cell.appendChild(button);
+              row.appendChild(cell);
+
+              button.addEventListener('click', function() {
+                document.querySelectorAll('.button').forEach(btn => {
+                  btn.classList.remove('clicked');
+                });
+                this.classList.add('clicked');
+                buscarCategorias(data.hobbies[index]);
+              });
+            }
+          }
+          table.appendChild(row);
+        }
+        categoriasContainer.appendChild(table);
+
+        document.querySelectorAll('.hobby-button').forEach(button => {
+          button.addEventListener('click', function() {
+            document.getElementById('searchInput').value = button.id;
+            document.querySelectorAll('.hobby-button').forEach(btn => {
+              btn.classList.remove('clicked');
+            });
+            this.classList.add('clicked');
+            // Adicione aqui a função a ser chamada quando um hobby for clicado, se necessário.
+          });
+        });
+      } else {
+        categoriasContainer.textContent = 'Nenhum hobby disponível';
+      }
+    })
+    .catch(error => {
+      console.error('Erro ao recuperar todos os hobbies:', error);
+    });
+}
+
+
+
+// Função para carregar a foto de perfil na tab bar
+function carregarFotoPerfil() {
+        $.get("/api/perfil", function(data) {
+            if (data.profile_image) {
+                $(".nav_perfil img").attr("src", data.profile_image);
+            }
+        });
+    }
+
+    // Chamar a função para carregar a foto de perfil quando a página carregar
+    $(document).ready(function() {
+        carregarFotoPerfil();
+    });
+</script>
+
+</body>
+</html>
+

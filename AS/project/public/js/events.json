@@ -1,0 +1,13 @@
+[
+  {
+    "id": 79,
+    "username": "João",
+    "date": "2024-08-06",
+    "time": "16:00",
+    "event_name": "Evento de Jardinagem",
+    "description": "Evento a não perder",
+    "location": "Aveiro",
+    "category": null,
+    "image_path": "events-images/image-1717581135675.jpeg"
+  }
+]

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Hobbify</title>
+    <link rel="icon" type="image/x-icon" href="images/logo_1.png">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/pagina_inicial.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  </head>
+
+  <body>
+    <header class="header">
+      <nav class="header__content">
+        <div class="hobbify">
+          <a href="/pagina_inicial">
+            <img src="images/hobbify.png">
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="main-container">
+      <section class="content-container">
+        <div class="content">
+          <div class="posts" id="postagens">
+            <!-- Postagens -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="tab-bar">
+      <div class="line-172">
+      </div>
+      <div class="container-4">
+        <div class="icon">
+          <a href="pagina_inicial">
+            <img src="images/home.png" />
+          </a>
+        </div>
+        <div class="icon">
+          <a href="explorar">
+            <img src="images/search.png" />
+          </a>
+        </div>
+        <div class="icon">
+          <a href="lista_eventos">
+            <img src="images/calendar.png" />
+          </a>
+        </div>
+        <div class="icon">
+          <a href="mensagens_geral">
+            <img src="images/messages.png" />
+          </a>
+        </div>
+        <div class="nav_perfil">
+            <div class="nav_avatar">
+            <a href="perfil"><img src="images/default.png"></a>
+            </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    function getPublicacoes() {
+    // Fetch the user's activities
+    $.get("/atividades", function(data) {
+        var atividades = data.atividades;
+        console.log(atividades);
+        const postagens = document.getElementById('postagens');
+        postagens.innerHTML = '';
+
+        // Loop through each activity to get publications
+        atividades.forEach(function(atividade) {
+            $.get("/publicacoes/" + atividade, function(data) {
+                var publicacoes = data.publicacoes;
+                console.log(publicacoes);
+
+                publicacoes.forEach(function(publicacao) {
+                    // Fetch profile data for each publication
+                    $.get("/api/perfil/" + publicacao.perfil_id, function(profileData) {
+                      console.log(profileData);
+                      const nomeLength = profileData.nome.length * 10; // Multiplicamos por 10 para converter o comprimento do nome em pixels
+                        let postHtml = `
+                            <article class="post">
+                                <div class="post__header">
+                                    <div class="post__profile">
+                                        <a class="post__avatar">
+                                            <img src="${profileData.profile_image}" alt="User Picture" />
+                                        </a>
+                                        <a class="post__user" href="/perfil" id="linkPerfil">${profileData.nome}</a>
+                                    </div>
+                                    <div class="hobby" style="margin-right: ${nomeLength}px;" onclick="window.location.href='/explorar?atv=${atividade}'">${atividade}</div>
+                                    <button class="post__more-options">
+                                        <svg
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <circle
+                                                cx="6.5"
+                                                cy="11.5"
+                                                r="1.5"
+                                                fill="var(--text-dark)"
+                                            />
+                                            <circle cx="12" cy="11.5" r="1.5" fill="var(--text-dark)" />
+                                            <circle
+                                                cx="17.5"
+                                                cy="11.5"
+                                                r="1.5"
+                                                fill="var(--text-dark)"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="post__content">
+                                    <div class="post__medias">`;
+
+
+                        if (publicacao.imagem_path) {
+                            postHtml += `<img class="post__media" src="${publicacao.imagem_path}" alt="${publicacao.conteudo_texto}" />`;
+                        }
+
+                        if (publicacao.conteudo_texto) {
+                            postHtml += `<p>${publicacao.conteudo_texto}</p>`;
+                        }
+
+                        postHtml += `</div></div></article>`;
+                        postagens.innerHTML += postHtml;
+
+                        document.getElementById('linkPerfil').addEventListener('click', function(e) {
+                            e.preventDefault(); // Previne o comportamento padrão do clique
+                            var newHref = "/perfil?id=" + publicacao.perfil_id;
+                            e.target.href = newHref;
+                            window.location.href = newHref; // Redireciona manualmente
+                        });
+                    }).fail(function() {
+                        console.error("Erro ao carregar dados do perfil do autor da publicação");
+                    });
+                });
+            }).fail(function() {
+                console.error("Erro ao carregar publicações");
+            });
+        });
+    }).fail(function() {
+        console.error("Erro ao carregar atividades");
+    });
+}
+
+
+
+
+  function getEventos() {
+    // Fetch the user's events
+    $.get("/eventos", function(data) {
+      var eventos = data;
+      console.log("Eventos: " + eventos);
+      const postagens = document.getElementById('postagens');
+      postagens.innerHTML = '';
+      eventos.forEach(function(evento) {
+
+        $.get("/nome_para_id/" + evento.username, function(idData) {
+          const perfil_id = idData.id;
+
+          // Fetch profile data
+          $.get("/api/perfil/" + perfil_id, function(profileData) {
+            let postHtml = `
+              <article class="post">
+                <div class="post__header">
+                  <div class="post__profile">
+                    <a class="post__avatar">
+                      <img src="${profileData.profile_image}" alt="Event Image" />
+                    </a>
+                    <a class="post__user" href="/perfil" id="linkPerfil">${evento.username}</a>
+                  </div>
+                  <div class="hobby" onclick="window.location.href='/explorar?atv=${evento.event_name }'">${evento.event_name}</div>
+                  <button class="post__more-options">
+                                        <svg
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <circle
+                                                cx="6.5"
+                                                cy="11.5"
+                                                r="1.5"
+                                                fill="var(--text-dark)"
+                                            />
+                                            <circle cx="12" cy="11.5" r="1.5" fill="var(--text-dark)" />
+                                            <circle
+                                                cx="17.5"
+                                                cy="11.5"
+                                                r="1.5"
+                                                fill="var(--text-dark)"
+                                            />
+                                        </svg>
+                                    </button>
+                </div>
+                <div class="post__content">
+                  <div class="post__medias">
+                    <img class="post__media" src="${evento.image_path}" alt="${evento.event_name}" />
+                    <p>${evento.description}</p>
+                  </div>
+                </div>
+              </article>`;
+              postagens.innerHTML += postHtml;
+              document.getElementById('linkPerfil').addEventListener('click', function(e) {
+                e.preventDefault();
+                var newHref = "/perfil?id=" + perfil_id;
+                e.target.href = newHref;
+                window.location.href = newHref;
+              });
+            }).fail(function() {
+              console.error("Erro ao carregar dados do perfil do autor do evento");
+            });
+        }).fail(function() {
+          console.error("Erro ao converter nome de usuário em ID de perfil");
+        });
+      });
+    }).fail(function() {
+      console.error("Erro ao carregar eventos");
+    });
+  }
+
+      // Função para carregar a foto de perfil na tab bar
+    function carregarFotoPerfil() {
+        $.get("/api/perfil", function(data) {
+            if (data.profile_image) {
+                $(".nav_perfil img").attr("src", data.profile_image);
+            }
+        });
+    }
+
+    // Chamar a função para carregar a foto de perfil quando a página carregar
+    $(document).ready(function() {
+        carregarFotoPerfil();
+        getPublicacoes();
+        getEventos();
+    });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mensagem privada</title>
+    <link rel="stylesheet" href="css/mensagem_privada.css" />
+</head>
+<body>
+<header class="header">
+    <div class="top">
+        <a href="mensagens_geral.html" class="back">
+            <img id="grid" class="grid" src="images/back_arrow.png" style="width: 35px; height: 35px;">
+          </a>
+          <a href="/perfil" id="linkPerfil" style="display: flex; align-items: center; justify-content: center;">
+            <h2 class="nome" id="nomeOutraPessoa"></h2>
+        </a>
+    </div>
+</header>
+<div class="mensagem-privada" id="mensagemPrivada">
+    <!-- As mensagens serão inseridas aqui dinamicamente -->
+</div>
+<div class="nab-bar">
+    <div class="search-box-uihut">
+        <input type="text" class="write-your-message" id="writeYourMessage" placeholder="Write your message">
+    </div>
+    <div class="enter">
+        <img class="vector-4" src="images/send.png" />
+    </div>
+</div>
+<script>
+
+document.getElementById('linkPerfil').addEventListener('click', function(e) {
+    e.preventDefault(); // Previne o comportamento padrão do clique
+    const urlParams = new URLSearchParams(window.location.search);
+    var userId = document.getElementById('nomeOutraPessoa').textContent;
+    var newHref = "/perfil?id=" + urlParams.get('id');
+    e.target.href = newHref;
+    window.location.href = newHref; // Redireciona manualmente
+});
+document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const idOutraPessoa = urlParams.get('id'); // Obtém o ID da outra pessoa do parâmetro da URL
+
+    fetch(`/mensagens/${idOutraPessoa}`)
+        .then(response => response.json())
+        .then(data => {
+            const mensagemPrivada = document.getElementById('mensagemPrivada');
+            // Verifica se há mensagens recebidas
+            if (!data.mensagens || data.mensagens.length === 0) {
+                mensagemPrivada.innerHTML = '<p class="no-messages">Nenhuma mensagem encontrada.</p>';
+                return;
+            }
+
+            console.log(data);
+
+            // Limpa o conteúdo anterior
+            mensagemPrivada.innerHTML = '';
+
+            // Adiciona as mensagens na página
+            data.mensagens.forEach(mensagem => {
+                // Verifica se a mensagem é do usuário logado ou da outra pessoa
+                if (mensagem.pessoa1_id == idOutraPessoa) { // Use '==' em vez de '===' para comparação de números
+                    mensagemPrivada.innerHTML += `
+                        <div class="container-1">
+                            <div class="bubble-tail">
+                                <div class="bubble">
+                                    <span class="message">${mensagem.mensagem}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    mensagemPrivada.innerHTML += `
+                        <div class="container-1">
+                            <div class="message-bubble">
+                                <div class="bubble-1">
+                                    <span class="message">${mensagem.mensagem}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            // Atualiza o nome da outra pessoa
+            document.getElementById('nomeOutraPessoa').textContent = data.nomeOutraPessoa;
+        })
+        .catch(error => {
+            console.error('Erro ao carregar mensagens privadas:', error);
+        });
+
+        
+
+    function enviarMensagem() {
+        const mensagemInput = document.getElementById('writeYourMessage');
+        const mensagem = mensagemInput.value.trim();
+        if (mensagem) {
+            fetch('/mensagens', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ mensagem: mensagem, pessoa2_id: idOutraPessoa }),
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                // Recarrega as mensagens
+                fetch(`/mensagens/${idOutraPessoa}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const mensagemPrivada = document.getElementById('mensagemPrivada');
+                        mensagemPrivada.innerHTML = '';
+
+                        data.mensagens.forEach(mensagem => {
+                            if (mensagem.pessoa1_id == idOutraPessoa) {
+                                mensagemPrivada.innerHTML += `
+                                    <div class="container-1">
+                                        <div class="bubble-tail">
+                                            <div class="bubble">
+                                                <span class="message">${mensagem.mensagem}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                mensagemPrivada.innerHTML += `
+                                    <div class="container-1">
+                                        <div class="message-bubble">
+                                            <div class="bubble-1">
+                                                <span class="message">${mensagem.mensagem}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+
+                        document.getElementById('nomeOutraPessoa').textContent = data.nomeOutraPessoa;
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar mensagens privadas:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Erro ao enviar mensagem:', error);
+            });
+
+            mensagemInput.value = ''; // Limpa o campo de entrada
+        }
+    }
+
+    document.getElementById('writeYourMessage').addEventListener('keydown', function(e) {
+        if (e.keyCode === 13) { // Verifica se a tecla pressionada foi Enter
+            enviarMensagem();
+        }
+    });
+
+    document.querySelector('.enter img').addEventListener('click', enviarMensagem);
+});
+</script>
+</body>
+</html>

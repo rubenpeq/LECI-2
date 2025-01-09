@@ -1,0 +1,331 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Vars */
+:root {
+  --primary: hsl(0, 0%, 100%);
+  --secondary: hsl(0, 0%, 98%);
+  --border: hsl(0, 0%, 86%);
+
+  --story-border: hsl(0, 0%, 78%);
+  --img-border: hsla(0, 0%, 0%, 0.1);
+
+  --text-dark: hsl(0, 0%, 15%);
+  --text-light: hsl(0, 0%, 60%);
+
+  --like: hsl(355, 82%, 61%);
+  --link: hsl(204, 100%, 48%);
+
+  --header-height: 44px;
+  --footer-height: 5%;
+}
+:root.darkTheme {
+  --primary: hsl(0, 0%, 0%);
+  --secondary: hsl(0, 0%, 2%);
+  --border: hsl(0, 0%, 15%);
+
+  --story-border: hsl(0, 0%, 44%);
+  --img-border: hsla(0, 0%, 100%, 0.1);
+
+  --text-dark: hsl(0, 0%, 98%);
+  --text-light: hsl(0, 0%, 60%);
+}
+
+.nav_perfil{
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  margin: 0.4px 0 4px 0;
+  display: flex;
+  width: 23.1px;
+  height: 23.4px;
+  box-sizing: border-box;
+}
+
+.nav_avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+svg {
+  display: block;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Header Navbar */
+.header {
+  width: 100%;
+  height: 7vh;
+  background-color: hsl(0, 0%, 100%);
+  
+
+  display: grid;
+
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.header::after {
+  content: '';
+  position: relative;
+  bottom: 0;
+
+  width: 100%;
+  height: 1px;
+  background-color: hsl(0, 0%, 86%);
+}
+
+.publish-link {
+  position: absolute;
+  left: 97%; /* Adjust the distance from the left edge */
+  top: 20px; /* Adjust the distance from the top */
+  float: right;
+  text-align: right;
+}
+
+.publish-img {
+  width: 25px; /* Adjust width as needed */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.top {
+  display: flex;
+  position: relative; /* Adicionado */
+  height: 7vh;
+  align-items: center;
+}
+
+.top .nome {
+  position: absolute; /* Adicionado */
+  left: 50%; /* Adicionado */
+  transform: translateX(-50%); /* Adicionado */
+}
+
+/* Main Content */
+.main-container {
+  padding: 20px;
+  background-color: var(--secondary);
+  flex: 1;
+  padding-bottom: 80px;
+}
+
+.small-img {
+  width: 30px !important;
+  height: 30px !important;
+  vertical-align: middle;
+  margin-top: 3px;
+  padding: 3px;
+}
+
+.top {
+  display: flex;
+  position: relative; /* Adicionado */
+  height: 7vh;
+  align-items: center;
+}
+
+.top .nome {
+  position: absolute; /* Adicionado */
+  left: 50%; /* Adicionado */
+  transform: translateX(-50%); /* Adicionado */
+}
+
+.event-info {
+  text-align: center;
+}
+
+
+/*  Event Toggle  */
+
+.toggleEvents {
+  margin-bottom: 20px;
+}
+
+.toggleCheckbox {
+  display: none;
+}
+
+.toggleContainer {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: fit-content;
+  border: 3px solid black;
+  border-radius: 20px;
+  background: black;
+  font-weight: bold;
+  color: black;
+  cursor: pointer;
+}
+
+.toggleContainer::before {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  left: 0%;
+  border-radius:20px;
+  background: white;
+  transition: all 0.3s;
+}
+
+.toggleContainer div {
+  padding: 6px;
+  text-align: center;
+  z-index: 1;
+}
+
+.toggleCheckbox:checked + .toggleContainer::before {
+  left: 50%;
+}
+
+.toggleCheckbox:checked + .toggleContainer div:first-child{
+  color: white;
+  transition: color 0.3s;
+}
+.toggleCheckbox:checked + .toggleContainer div:last-child{
+  color: black;
+  transition: color 0.3s;
+}
+.toggleCheckbox + .toggleContainer div:first-child{
+  color: black;
+  transition: color 0.3s;
+}
+.toggleCheckbox + .toggleContainer div:last-child{
+  color: white;
+  transition: color 0.3s;
+}
+
+/* Event List */
+.events-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.events-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.event {
+  height: auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.event:hover {
+  transform: translateY(-5px);
+}
+
+.event img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.event > div {
+  padding: 15px;
+  font-family: 'Abhaya Libre', serif;
+}
+
+
+.load-more {
+  position: relative;
+  bottom: var(--footer-height);
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 15px;
+  padding: 10px 24px;
+  border-radius: 12px;
+  background-color: var(--link);
+  color: var(--primary);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  z-index: 0;
+}
+
+.load-more:hover {
+  background-color: var(--primary);
+  color: var(--link);
+  border: 2px solid var(--link);
+}
+
+
+/* Footer Bar*/
+
+footer {
+  position: relative; /* or static */
+  z-index: 1;
+}
+
+.tab-bar {
+  position: fixed;
+  bottom: 0; /* Posiciona a barra de abas no final da página */
+  height: var(--footer-height);
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centra os elementos filhos verticalmente */
+  align-items: center; /* Centra os elementos filhos horizontalmente */
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--primary);
+  border: 1px solid var(--border); /* Adiciona uma borda preta */
+}
+
+
+.icon {
+  margin: 0.4px 0 4px 0;
+  display: flex;
+  width: 23.1px;
+  height: 23.4px;
+  box-sizing: border-box;
+}
+
+
+.footer-container {
+  margin: 0 0px;
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  box-sizing: border-box;
+  align-self: center;
+  max-width: 600px;
+}
+
+
+.profile-image img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%; /* Faz a imagem oval */
+  object-fit: cover; /* Garante que a imagem cubra toda a área */
+}

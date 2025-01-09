@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evento</title>
+    <link rel="icon" type="image/x-icon" href="images/logo_1.png">
+    <link rel="stylesheet" href="css/evento.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="js/getEventByID.js" defer></script>
+
+  </head>
+  <body>
+
+    <header class="header">
+      <div class="top">
+        <a href="lista_eventos" class="back-link">
+          <img class="backarrow" src="images/back_arrow.png">
+        </a>
+        <h2 class="nome">Detalhes do Evento</h2>
+      </div>
+    </header>
+
+
+    <main class="main-container">
+      <div class="article-header">
+        <h1 class="event-title"> <span id="event-name"></span> </h1>
+      </div>
+      <div class="container">
+        <img class="event-image" id="event-image" src="" alt="Event Image" />
+        <div class="event-info">
+          <p><img src="/images/user-circle.png" alt="User Icon" class="small-img"> <strong><span id="event-username"></strong></span></p>
+          <p><img src="/images/calendar-symbol.png" alt="Calendar Icon" class="small-img"> <strong><span id="event-date"></strong></span></p>
+          <p><img src="/images/clock.png" alt="Clock Icon" class="small-img"> <strong><span id="event-time"></span></strong></p>
+          <p><img src="/images/location-pin.png" alt="Location Icon" class="small-img"> <strong><span id="event-location"></span></strong></p>
+          <!--Botão de adicionar eventos-->
+          <button class="add-event-button" onclick="addEvent()">Adicionar Evento</button>
+          <!-- <p><strong>Category:</strong> <span id="event-category"></span></p> -->
+        </div>
+        <p style="margin-left: 20px;"><strong>Description:</strong> <span id="event-description"></span></p>
+      </div>
+    </main>
+
+    <footer>
+      <div class="tab-bar">
+        <div class="footer-container">
+          <div class="icon">
+            <a href="pagina_inicial">
+              <img src="images/home.png" />
+            </a>
+          </div>
+          <div class="icon">
+            <a href="explorar">
+              <img src="images/search.png" />
+            </a>
+          </div>
+          <div class="icon">
+            <a href="lista_eventos">
+              <img src="images/calendar.png" />
+            </a>
+          </div>
+          <div class="icon">
+            <a href="mensagens_geral">
+              <img src="images/messages.png" />
+            </a>
+          </div>
+          <div class="nav_perfil">
+            <a href="perfil">
+              <a href="perfil"><img src="images/default.png"></a>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Função para carregar a foto de perfil na tab bar
+    function carregarFotoPerfil() {
+        $.get("/api/perfil", function(data) {
+            if (data.profile_image) {
+                $(".nav_perfil img").attr("src", data.profile_image);
+            }
+        });
+    }
+
+    // Chamar a função para carregar a foto de perfil quando a página carregar
+    $(document).ready(function() {
+        carregarFotoPerfil();
+    });
+
+    // Função para adicionar evento
+    function addEvent() {
+      const eventId = window.location.search.split("=")[1];
+      $.post("/api/adicionar_evento", { event_id: eventId }, function(data) {
+        if (data.success) {
+          alert("Evento adicionado com sucesso!");
+        } else {
+          alert("Erro ao adicionar evento.");
+        }
+      });
+    }
+
+
+    </script>
+  </body>
+</html>
