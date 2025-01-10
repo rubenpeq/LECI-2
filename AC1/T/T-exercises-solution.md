@@ -879,9 +879,100 @@ endif:
 -32 = **1111 1111 1110 0000**
 
 ## 90. Determine o valor em decimal representado por cada uma das quantidades seguintes, supondo que estão codificadas em complemento para 2 com 8 bits:  
- 0b00101011 = **53**<br>
- 0xA5 = 1010 0101 = - (0b01011010 + 1) = - 0b01011011 = **-91**<br>
- 0b10101101 = - (0b01010010 + 1) = - 0b01010011 = **-83**<br>
- 0x6B = 0b01101011 = **107**<br>
- 0xFA = - (0b00000101 + 1) = - 0b00000110 = **-6**<br>
- 0x80 = - (0b01111111 + 1) = - 0b10000000 = **-128**
+0b00101011 = **53**<br>
+0xA5 = - (0b01011010 + 1) = - 0b01011011 = **-91**<br>
+0b10101101 = - (0b01010010 + 1) = - 0b01010011 = **-83**<br>
+0x6B = 0b01101011 = **107**<br>
+0xFA = - (0b00000101 + 1) = - 0b00000110 = **-6**<br>
+0x80 = - (0b01111111 + 1) = - 0b10000000 = **-128**
+
+## 91. Determine a representação das quantidades do exercício anterior em hexadecimal com 16 bits (também codificadas em complemento para 2).
+0b00101011 = **0x002B**<br>
+0xA5 = **0xFFA5**<br>
+0b10101101 = **0xFFAD**<br>
+0x6B = **0x006B**<br>
+0xFA = **0xFFFA**<br>
+0x80 = **0xFF80**
+
+## 92. Como é realizada a deteção de overflow em operações de adição com quantidades sem sinal?
+Em operações de adição com quantidades sem sinal, é detetado um overflow se o bit carry for igual a 1.
+
+## 93. Como é realizada a deteção de overflow em operações de adição com quantidades com sinal (codificadas em complemento para 2)?
+- Ocorre overflow quando é ultrapassada a gama de representação. Isso acontece quando:
+    - se somam dois positivos e o resultado obtido é negativo.
+    - se somam dois negativos e o resultado obtido é positivo.
+
+A situação de overflow ocorre quando o carry-in do bit mais significativo não é igual ao carry-out.
+
+## 94. Considere os seguintes pares de valores em $s0 e $s1:
+**i.  $s0 = 0x70000000 $s1 = 0x0FFFFFFF**<br>
+**ii. $s0 = 0x40000000 $s1 = 0x40000000**
+### a. Qual o resultado produzido pela instrução add $t0, $s0, $s1?
+- **i.**
+    - $t0 = 0x70000000 + 0x0FFFFFFF = 0x7FFFFFFF
+- **ii.**
+    - $t0 = 0x40000000 + 0x40000000 = 0x80000000
+
+### b. Para a alínea anterior os resultados são os esperados ou ocorreu overflow?
+- **i.**
+    - Não ocorreu overflow, a soma de 2 positivos deu um número positivo.
+- **ii.**
+    - Ocorreu overflow, a soma de 2 positivos deu um número negativo.
+
+### c. Qual o resultado produzido pela instrução sub $t0, $s0, $s1?
+**i.**
+```
+$t0 = 0x70000000 + (-0x0FFFFFFF) = 0x60000001
+   1111 ... -> carry
+    0111 0000 ... 0000 0000 -> MSB carry-in = 1
+   +1111 0000 ... 0000 0001
+  1 0110 0000 ... 0000 0001 -> carry-out = 1
+```
+**ii.**
+```
+$t0 = 0x40000000 + (-0x40000000) = 0x00000000
+   1100 ... -> carry
+    0100 0000 ... 0000 0000 -> MSB carry-in = 1
+   +1100 0000 ... 0000 0000
+  1 0000 0000 ... 0000 0000 -> carry-out = 1
+```
+### d. Para a alínea anterior os resultados são os esperados ou ocorreu overflow?
+Em ambos os casos não ocorreu overflow, **carry-in == carry-out**.
+
+### e. Qual o resultado produzido pelas instruções:
+```asm
+add $t0, $s0,$s1
+add $t0, $t0,$s1
+```
+**i.**
+```asm
+add $t0, $s0,$s1
+$t0 = 0x70000000 + 0x0FFFFFFF = 0x7FFFFFFF
+   0000 ... -> carry
+    0111 0000 ... 0000 0000 -> carry-in = 0
+   +0000 1111 ... 1111 1111
+  0 0111 1111 ... 1111 1111 -> carry-out = 0
+
+add $t0, $t0,$s1
+$t0 = 0x7FFFFFFF + 0x0FFFFFFF = 0x8FFFFFFE
+   0111 ...
+    0111 1111 ... 1111 1111 -> MSB carry-in = 1
+   +0000 1111 ... 1111 1111
+  0 1000 0000 ... 0000 0000 -> carry-out = 0
+
+```
+**ii.**
+```asm
+add $t0, $s0,$s1
+$t0 = 0x40000000 + 0x40000000 = 0x80000000
+   0100 ... -> carry
+    0100 0000 ... 0000 0000 -> carry-in = 1
+   +0100 0000 ... 0000 0000
+  0 1000 0000 ... 0000 0000 -> carry-out = 0
+
+add $t0, $t0,$s1
+$t0 = ...
+```
+
+### f. Para a alínea anterior os resultados são os esperados ou ocorreu overflow?
+No caso dos pares de valores **i**, houve overflow na segunda instrução, no **ii** houve overflow na primeira instrução.
