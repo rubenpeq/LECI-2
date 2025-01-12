@@ -1052,3 +1052,221 @@ mflo $t0    # $t0 = $t2 / $t3
 - Divide-se dividendo por divisor, em módulo
 - O quociente tem sinal negativo se os sinais do dividendo e do divisor forem diferentes
 - O resto tem o mesmo sinal do dividendo
+
+## 101. Considerando que $t0=-7 e $t1=2, determine o resultado da instrução div $t0,$t1 e o valor armazenado respetivamente nos registos HI e LO.
+```
+-7 / 2 = -3 (rem = -1)
+hi = 0xFFFFFFFF
+lo = 0xFFFFFFFD
+```
+
+## 102. Repita o exercício anterior admitindo agora que $t0=0xFFFFFFF9 e $t1=0x00000002.
+```
+0xFFFFFFF9 / 0x00000002 = -7 / 2 = -3 (rem = -1)
+hi = 0xFFFFFFFF
+lo = 0xFFFFFFFD
+```
+
+## 103. Considerando que $5=-9 e $10=2, determine o valor que ficará armazenado no registo destino pela instrução virtual rem $6,$5,$10.
+```
+rem $6,$5,$10   # $5 % $10
+-9 / 1 = -1 (rem = -4)
+$6 = hi = 0xFFFFFFFC
+```
+
+## 104. As duas sub-rotinas seguintes permitem detetar overflow nas operações de adição com e sem sinal, no MIPS. Analise o código apresentado e determine o resultado produzido, pelas duas sub-rotinas, nas seguintes situações:
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    or   $v0,$0,$0
+    xor  $1,$a0,$a1
+    slt  $1,$1,$0
+    bne  $1,$0,notovf_s
+    addu $1,$a0,$a1
+    xor  $1,$1,$a0
+    slt  $1,$1,$0
+    beq  $1,$0,notovf_s
+    ori  $v0,$0,1
+notovf_s:
+    jr   $ra
+ ```
+ ```asm
+    # Overflow detection, unsigned
+    # int isovf_unsigned(unsigned int a, unsigned int b);
+isovf_unsig:
+    ori  $v0,$0,0
+    nor  $1,$a1,$0
+    sltu $1,$1,$a0
+    beq  $1,$0,notovf_u
+    ori  $v0,$0,1
+notovf_u:
+    jr   $ra
+```
+
+### a. $a0=0x7FFFFFF1, $a1=0x0000000E;
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    or   $v0,$0,$0          # $v0 = 0
+    xor  $1,$a0,$a1         # $1 = 0x7FFFFFF1 ^ 0x0000000E = 0x7FFFFFFF
+    slt  $1,$1,$0           # $1 = 0
+    bne  $1,$0,notovf_s     # doesn't branch
+    addu $1,$a0,$a1         # $1 = 0x7FFFFFFF
+    xor  $1,$1,$a0          # $1 = 0x7FFFFFFF ^ 0x7FFFFFF1 = 0x0000000E
+    slt  $1,$1,$0           # $1 = 0
+    beq  $1,$0,notovf_s     # branches to notovf_s
+    ori  $v0,$0,1
+notovf_s:
+    jr   $ra                # end sub-routine (not overflow)
+```
+```asm
+    # Overflow detection, unsigned
+    # int isovf_unsigned(unsigned int a, unsigned int b);
+isovf_unsig:
+    ori  $v0,$0,0           # $v0 = 0
+    nor  $1,$a1,$0          # $1 = 0xFFFFFFF1
+    sltu $1,$1,$a0          # $1 = 0
+    beq  $1,$0,notovf_u     # branches to notovf_u
+    ori  $v0,$0,1
+notovf_u:
+    jr   $ra                # end sub-routine (not overflow)
+```
+
+### b. $a0=0x7FFFFFF1, $a1=0x0000000F;
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    or   $v0,$0,$0          # $v0 = 0
+    xor  $1,$a0,$a1         # $1 = 0x7FFFFFF1 ^ 0x0000000F = 0x7FFFFFFE
+    slt  $1,$1,$0           # $1 = 0
+    bne  $1,$0,notovf_s     # doesn't branch
+    addu $1,$a0,$a1         # $1 = 0x80000000
+    xor  $1,$1,$a0          # $1 = 0x80000000 ^ 0x7FFFFFF1 = 0xFFFFFFF1
+    slt  $1,$1,$0           # $1 = 1
+    beq  $1,$0,notovf_s     # doesn't branch
+    ori  $v0,$0,1           # $v0 = 1
+notovf_s:
+    jr   $ra                # end sub-routine (overflow)
+```
+```asm
+    # Overflow detection, unsigned
+    # int isovf_unsigned(unsigned int a, unsigned int b);
+isovf_unsig:
+    ori  $v0,$0,0           # $v0 = 0
+    nor  $1,$a1,$0          # $1 = 0xFFFFFFF0
+    sltu $1,$1,$a0          # $1 = 0
+    beq  $1,$0,notovf_u     # branches to notovf_u
+    ori  $v0,$0,1
+notovf_u:
+    jr   $ra                # end sub-routine (not overflow)
+```
+
+### c. $a0=0xFFFFFFF1, $a1=0xFFFFFFFF;
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    or   $v0,$0,$0          # $v0 = 0
+    xor  $1,$a0,$a1         # $1 = 0xFFFFFFF1 ^ 0xFFFFFFFF = 0x0000000E
+    slt  $1,$1,$0           # $1 = 0
+    bne  $1,$0,notovf_s     # doesn't branch
+    addu $1,$a0,$a1         # $1 = 0xFFFFFFF0
+    xor  $1,$1,$a0          # $1 = 0xFFFFFFF0 ^ 0xFFFFFFF1 = 0x00000001
+    slt  $1,$1,$0           # $1 = 0
+    beq  $1,$0,notovf_s     # branches to notovf_s
+    ori  $v0,$0,1
+notovf_s:
+    jr   $ra                # end sub-routine (not overflow)
+```
+```asm
+    # Overflow detection, unsigned
+    # int isovf_unsigned(unsigned int a, unsigned int b);
+isovf_unsig:
+    ori  $v0,$0,0           # $v0 = 0
+    nor  $1,$a1,$0          # $1 = 0x00000000
+    sltu $1,$1,$a0          # $1 = 1
+    beq  $1,$0,notovf_u     # doesn't branch
+    ori  $v0,$0,1           # $v0 = 1
+notovf_u:
+    jr   $ra                # end sub-routine (overflow)
+```
+
+### d. $a0=0x80000000, $a1=0x80000000;
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    or   $v0,$0,$0          # $v0 = 0
+    xor  $1,$a0,$a1         # $1 = 0x80000000 ^ 0x80000000 = 0x00000000
+    slt  $1,$1,$0           # $1 = 0
+    bne  $1,$0,notovf_s     # doesn't branch
+    addu $1,$a0,$a1         # $1 = 0x00000000
+    xor  $1,$1,$a0          # $1 = 0x00000000 ^ 0x80000000 = 0x80000000
+    slt  $1,$1,$0           # $1 = 1
+    beq  $1,$0,notovf_s     # doesn't branch
+    ori  $v0,$0,1           # $v0 = 1
+notovf_s:
+    jr   $ra                # end sub-routine (overflow)
+```
+```asm
+    # Overflow detection, unsigned
+    # int isovf_unsigned(unsigned int a, unsigned int b);
+isovf_unsig:
+    ori  $v0,$0,0           # $v0 = 0
+    nor  $1,$a1,$0          # $1 = 0x7FFFFFFF
+    sltu $1,$1,$a0          # $1 = 1
+    beq  $1,$0,notovf_u     # doesn't branch
+    ori  $v0,$0,1           # $v0 = 1
+notovf_u:
+    jr   $ra                # end sub-routine (overflow)
+```
+
+## 105. As duas sub-rotinas anteriores podem ser também escritas alternativamente com o código abaixo. A abordagem é ligeiramente diferente. No caso de operações sem sinal, o overflow pode ser detetado para as operações de soma e subtração. Analise o código apresentado e determine o resultado produzido, pelas duas sub-rotinas, nas condições indicadas nas alíneas da questão anterior:
+```asm
+    # Overflow detection in addition, unsigned
+    # int isovf_unsigned_plus(unsigned int a, unsigned int b);
+isovf_unsig_plus:
+    ori  $v0, $0, 0
+    addu $t2, $a0, $a1          # temp = A + B;
+    bge  $t2, $a0, notovf_uadd
+    bge  $t2, $a1, notovf_uadd
+    ori  $v0, $0, 1
+notovf_uadd:
+    jr   $ra
+```
+```asm
+    # Overflow detection in subtraction, unsigned
+    # int isovf_unsigned_sub(unsigned int a, unsigned int b);
+isovf_unsig_sub:
+    ori  $v0,$0,0
+    slt  $1, $a0, $a1
+    beq  $1, $0, notovf_usub
+    ori  $v0, $0,1
+notovf_usub:
+    jr   $ra
+```
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    ori  $v0,$0,0
+    add  $1, $a0, $a1       # res = a + b;
+    xor  $a1, $a0, $a1      # tmp = a ^ b;
+    bltz $a1, notovf_s      # if (tmp < 0) no_ovf();
+    xor  $a1, $1, $a0       # tmp = res ^ a;
+    bgez $a1, notovf_s      # if (tmp >= 0) no_ovf();
+    ori  $v0,$0,1
+notovf_s:
+    jr   $ra
+```
+
+### a.  $a0=0x7FFFFFF1, $a1=0x0000000E;
+
+### b.  $a0=0x7FFFFFF1, $a1=0x0000000F;
+
+### c.  $a0=0xFFFFFFF1, $a1=0xFFFFFFFF;
+
+### d.  $a0=0x80000000, $a1=0x80000000;
