@@ -1116,7 +1116,7 @@ isovf_signed:
     addu $1,$a0,$a1         # $1 = 0x7FFFFFFF
     xor  $1,$1,$a0          # $1 = 0x7FFFFFFF ^ 0x7FFFFFF1 = 0x0000000E
     slt  $1,$1,$0           # $1 = 0
-    beq  $1,$0,notovf_s     # branches to notovf_s
+    beq  $1,$0,notovf_s     # branch to notovf_s
     ori  $v0,$0,1
 notovf_s:
     jr   $ra                # end sub-routine (not overflow)
@@ -1128,7 +1128,7 @@ isovf_unsig:
     ori  $v0,$0,0           # $v0 = 0
     nor  $1,$a1,$0          # $1 = 0xFFFFFFF1
     sltu $1,$1,$a0          # $1 = 0
-    beq  $1,$0,notovf_u     # branches to notovf_u
+    beq  $1,$0,notovf_u     # branch to notovf_u
     ori  $v0,$0,1
 notovf_u:
     jr   $ra                # end sub-routine (not overflow)
@@ -1158,7 +1158,7 @@ isovf_unsig:
     ori  $v0,$0,0           # $v0 = 0
     nor  $1,$a1,$0          # $1 = 0xFFFFFFF0
     sltu $1,$1,$a0          # $1 = 0
-    beq  $1,$0,notovf_u     # branches to notovf_u
+    beq  $1,$0,notovf_u     # branch to notovf_u
     ori  $v0,$0,1
 notovf_u:
     jr   $ra                # end sub-routine (not overflow)
@@ -1176,7 +1176,7 @@ isovf_signed:
     addu $1,$a0,$a1         # $1 = 0xFFFFFFF0
     xor  $1,$1,$a0          # $1 = 0xFFFFFFF0 ^ 0xFFFFFFF1 = 0x00000001
     slt  $1,$1,$0           # $1 = 0
-    beq  $1,$0,notovf_s     # branches to notovf_s
+    beq  $1,$0,notovf_s     # branch to notovf_s
     ori  $v0,$0,1
 notovf_s:
     jr   $ra                # end sub-routine (not overflow)
@@ -1231,8 +1231,8 @@ notovf_u:
 isovf_unsig_plus:
     ori  $v0, $0, 0
     addu $t2, $a0, $a1          # temp = A + B;
-    bge  $t2, $a0, notovf_uadd
-    bge  $t2, $a1, notovf_uadd
+    bgeu $t2, $a0, notovf_uadd
+    bgeu $t2, $a1, notovf_uadd
     ori  $v0, $0, 1
 notovf_uadd:
     jr   $ra
@@ -1264,9 +1264,207 @@ notovf_s:
 ```
 
 ### a.  $a0=0x7FFFFFF1, $a1=0x0000000E;
+```asm
+    # Overflow detection in addition, unsigned
+    # int isovf_unsigned_plus(unsigned int a, unsigned int b);
+isovf_unsig_plus:
+    ori  $v0, $0, 0             # $v0 = 0
+    addu $t2, $a0, $a1          # temp = A + B = 0x7FFFFFFF
+    bgeu $t2, $a0, notovf_uadd  # branch to notovf_uadd
+    bgeu $t2, $a1, notovf_uadd
+    ori  $v0, $0, 1
+notovf_uadd:
+    jr   $ra                    # end sub-routine (not overflow)
+```
+```asm
+    # Overflow detection in subtraction, unsigned
+    # int isovf_unsigned_sub(unsigned int a, unsigned int b);
+isovf_unsig_sub:
+    ori  $v0,$0,0               # $v0 = 0
+    slt  $1, $a0, $a1           # $1 = 0 
+    beq  $1, $0, notovf_usub    # branch to notovf_usub
+    ori  $v0, $0,1
+notovf_usub:
+    jr   $ra                    # end sub-routine (not overflow)
+```
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    ori  $v0,$0,0           # $v0 = 0
+    add  $1, $a0, $a1       # res = a + b = 0x7FFFFFFF
+    xor  $a1, $a0, $a1      # tmp = a ^ b = 0x7FFFFFFF
+    bltz $a1, notovf_s
+    xor  $a1, $1, $a0       # tmp = res ^ a = 0x0000000E
+    bgez $a1, notovf_s      # branch to notovf_s
+    ori  $v0,$0,1
+notovf_s:
+    jr   $ra                # end sub-routine (not overflow)
+```
 
 ### b.  $a0=0x7FFFFFF1, $a1=0x0000000F;
+```asm
+    # Overflow detection in addition, unsigned
+    # int isovf_unsigned_plus(unsigned int a, unsigned int b);
+isovf_unsig_plus:
+    ori  $v0, $0, 0             # $v0 = 0
+    addu $t2, $a0, $a1          # temp = A + B = 0x80000000
+    bgeu $t2, $a0, notovf_uadd  # branch to notovf_uadd
+    bgeu $t2, $a1, notovf_uadd
+    ori  $v0, $0, 1
+notovf_uadd:
+    jr   $ra                    # end sub-routine (not overflow)
+```
+```asm
+    # Overflow detection in subtraction, unsigned
+    # int isovf_unsigned_sub(unsigned int a, unsigned int b);
+isovf_unsig_sub:
+    ori  $v0,$0,0               # $v0 = 0
+    slt  $1, $a0, $a1           # $1 = 0
+    beq  $1, $0, notovf_usub    # branch to notovf_usub
+    ori  $v0, $0,1
+notovf_usub:
+    jr   $ra                    # end sub-routine (not overflow)
+```
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    ori  $v0,$0,0           # $v0 = 0
+    add  $1, $a0, $a1       # res = a + b = 0x80000000
+    xor  $a1, $a0, $a1      # tmp = a ^ b = 0x7FFFFFFE
+    bltz $a1, notovf_s
+    xor  $a1, $1, $a0       # tmp = res ^ a = 0xFFFFFFF1
+    bgez $a1, notovf_s      # doesn't branch
+    ori  $v0,$0,1           # $v0 = 1
+notovf_s:
+    jr   $ra                # end sub-routine (overflow)
+```
 
 ### c.  $a0=0xFFFFFFF1, $a1=0xFFFFFFFF;
+```asm
+    # Overflow detection in addition, unsigned
+    # int isovf_unsigned_plus(unsigned int a, unsigned int b);
+isovf_unsig_plus:
+    ori  $v0, $0, 0             # $v0 = 0
+    addu $t2, $a0, $a1          # temp = A + B = 0xFFFFFFF0
+    bgeu $t2, $a0, notovf_uadd  # doesn't branch
+    bgeu $t2, $a1, notovf_uadd  # doesn't branch
+    ori  $v0, $0, 1             # $v0 = 1
+notovf_uadd:
+    jr   $ra                    # end sub-routine (overflow)
+```
+```asm
+    # Overflow detection in subtraction, unsigned
+    # int isovf_unsigned_sub(unsigned int a, unsigned int b);
+isovf_unsig_sub:
+    ori  $v0,$0,0               # $v0 = 0
+    slt  $1, $a0, $a1           # $1 = 1
+    beq  $1, $0, notovf_usub    # doesn't branch
+    ori  $v0, $0,1              # $v0 = 1
+notovf_usub:
+    jr   $ra                    # end sub-routine (overflow)
+```
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    ori  $v0,$0,0           # $v0 = 0
+    add  $1, $a0, $a1       # res = a + b = 0xFFFFFFF0
+    xor  $a1, $a0, $a1      # tmp = a ^ b = 0x0000000E
+    bltz $a1, notovf_s      # doesn't branch
+    xor  $a1, $1, $a0       # tmp = res ^ a = 0xFFFFFFFF
+    bgez $a1, notovf_s      # doesn't branch
+    ori  $v0,$0,1           # $v0 = 1
+notovf_s:
+    jr   $ra                # end sub-routine (overflow)
+```
 
 ### d.  $a0=0x80000000, $a1=0x80000000;
+```asm
+    # Overflow detection in addition, unsigned
+    # int isovf_unsigned_plus(unsigned int a, unsigned int b);
+isovf_unsig_plus:
+    ori  $v0, $0, 0             # $v0 = 0
+    addu $t2, $a0, $a1          # temp = A + B = 0x00000000
+    bgeu $t2, $a0, notovf_uadd  # doesn't branch
+    bgeu $t2, $a1, notovf_uadd  # doesnt't branch
+    ori  $v0, $0, 1             # $v0 = 1
+notovf_uadd:
+    jr   $ra                    # end sub-routine (overflow)
+```
+```asm
+    # Overflow detection in subtraction, unsigned
+    # int isovf_unsigned_sub(unsigned int a, unsigned int b);
+isovf_unsig_sub:
+    ori  $v0,$0,0               # $v0 = 0
+    slt  $1, $a0, $a1           # $1 = 0
+    beq  $1, $0, notovf_usub    # branch to notovf_usub
+    ori  $v0, $0,1
+notovf_usub:
+    jr   $ra                    # end sub-routine (not overflow)
+```
+```asm
+    # Overflow detection, signed
+    # int isovf_signed(int a, int b);
+isovf_signed:
+    ori  $v0,$0,0           # $v0 = 0
+    add  $1, $a0, $a1       # res = a + b = 0x00000000
+    xor  $a1, $a0, $a1      # tmp = a ^ b = 0x00000000
+    bltz $a1, notovf_s      # doesn't branch
+    xor  $a1, $1, $a0       # tmp = res ^ a = 0x80000000
+    bgez $a1, notovf_s      # doesn't branch
+    ori  $v0,$0,1           # $v0 = 1
+notovf_s:
+    jr   $ra                # end sub-routine (overflow)
+```
+
+## 106. Ainda no código das sub-rotinas das questões anteriores, qual a razão para não haver salvaguarda de qualquer registo na stack?
+As sub-rotinas das questões anteriores são terminais, ou seja, não chamam nenhuma outra sub-rotina nem usam nenhum registo $sn, assim sendo, não é necessário salvaguardar nenhum registo na stack.
+
+## 107. Na conversão de uma quantidade codificada em formato IEEE 754, precisão simples, para decimal, qual o número máximo de casas decimais com que o resultado deve ser apresentado?
+Partindo de uma representação com "n" dígitos fracionários na base "r", o número máximo de dígitos na base "s" que garante que a mudança de base não acrescenta precisão à representação original é: $m = \left\lfloor n \frac{\log r}{\log s} \right\rfloor$<br>
+Assim, no máximo, o resultado deve ser apresentado em **6 casas decimais**.
+
+## 108. Responda à questão anterior admitindo que o valor original se encontra agora representado com precisão dupla no formato IEEE 754.
+Em precisão dupla, o resultado deve ser apresentado com um máximo de **15 casas decimais**.
+
+## 109. Determine a representação em formato IEEE 754, precisão simples, da quantidade real 19,187510.<br>Determine a representação da mesma quantidade em precisão dupla.
+```
+19.187510
+19 -> 10011
+
+0.18751 * 2
+MSB** 0.37502 * 2
+0.75004 * 2
+1.50008 * 2
+1.00016 * 2
+0.00032 * 2
+0.00064 * 2
+0.00128 * 2
+0.00256 * 2
+0.00512 * 2
+0.01024 * 2
+0.02048 * 2
+0.04096 * 2
+0.08192 * 2
+0.16384 * 2
+0.32768 * 2
+0.65536 * 2
+1.31072 * 2
+0.62144 * 2
+LSB** 1.24288
+```
+
+$19.187510_{10} = 10011.0011000000000000101_2 = 1.00110011000000000000101_2$
+
+## 110. Determine, em decimal (vírgula fixa), o valor das quantidades seguintes representadas em formato IEEE 754, precisão simples. Na alínea b) apresente apenas o valor em notação científica usando base 2.
+### a. 0xC19A8000.
+```
+1                       -> Sinal = negativo
+10000011                -> Expoente = 131-127 = 4
+00110101000000000000000 -> Mantissa = 1.00110101
+```
+$1.00110101_2 \times 2^4 = 10011.0101_2 = 19.3125_{10}$
+
+### b. 0x80580000.
