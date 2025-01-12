@@ -272,7 +272,9 @@ beq $1, $0, exit
 ```
 ### c. bgt $5,0xA3,exit
 ```asm
-...
+addi $1, $0, 0xA3
+slt $1, $1, $5
+bne $1, $0, exit
 ```
 ### d. bge $10,0x57,exit
 ```asm
@@ -286,7 +288,9 @@ bne $1, $0, exit
 ```
 ### f. ble $23,0x16,exit
 ```asm
-...
+addi $1, $0, 0x16
+slt $1, $1, $23
+beq $1, $0, exit
 ```
 
 ## 39. Na tradução de C para assembly, quais as principais diferenças entre um ciclo "while(...){...}" e um ciclo "do{...}while(...);"?
@@ -904,9 +908,7 @@ Em operações de adição com quantidades sem sinal, é detetado um overflow se
 
 A situação de overflow ocorre quando o carry-in do bit mais significativo não é igual ao carry-out.
 
-## 94. Considere os seguintes pares de valores em $s0 e $s1:
-**i.  $s0 = 0x70000000 $s1 = 0x0FFFFFFF**<br>
-**ii. $s0 = 0x40000000 $s1 = 0x40000000**
+## 94. Considere os seguintes pares de valores em $s0 e $s1:<br>i.  $s0 = 0x70000000 $s1 = 0x0FFFFFFF<br>ii. $s0 = 0x40000000 $s1 = 0x40000000
 ### a. Qual o resultado produzido pela instrução add $t0, $s0, $s1?
 - **i.**
     - $t0 = 0x70000000 + 0x0FFFFFFF = 0x7FFFFFFF
@@ -971,8 +973,82 @@ $t0 = 0x40000000 + 0x40000000 = 0x80000000
   0 1000 0000 ... 0000 0000 -> carry-out = 0
 
 add $t0, $t0,$s1
-$t0 = ...
+$t0 = 0x80000000 + 0x40000000 = 0xC0000000
+   0000 ... -> carry
+    1000 0000 ... 0000 0000 -> carry-in = 0
+    0100 0000 ... 0000 0000
+  0 1100 0000 ... 0000 0000 -> carry-out = 0
 ```
 
 ### f. Para a alínea anterior os resultados são os esperados ou ocorreu overflow?
 No caso dos pares de valores **i**, houve overflow na segunda instrução, no **ii** houve overflow na primeira instrução.
+
+## 95. Para a multiplicação de dois operandos de "m" e "n" bits, respetivamente, qual o número de bits necessário para o armazenamento do resultado qualquer que este seja?
+Para o armazenamento do resultado seria necessários **m + n bits**.
+
+## 96. Apresente a decomposição em instruções nativas das seguintes instruções virtuais:
+### a. mul $5,$6,$7
+```asm
+mult $6, $7
+mflo $5
+```
+
+### b. la $t0,label  c/ label = 0x00400058
+```asm
+lui $1, 0x0040
+ori $t0, $1, 0x0058
+```
+
+### c. div $2,$1,$2
+```asm
+div $1, $2  # hi = $1 % $2
+            # lo = $1 / $2
+mflo $2
+```
+
+### d. rem $5,$6,$7
+```asm
+div $6, $7  # hi = $6 % $7
+            # lo = $6 / $7
+mfhi $5
+```
+
+### e. ble $8,0x16,target
+```asm
+addi $1, $0, 0x16
+slt $1, $1, $8
+beq $1, $0, target
+```
+
+### f. bgt $4,0x3F,target
+```asm
+addi $1, $0, 0x3F
+slt $1, $1, $4
+bne $1, $0, target
+```
+
+## 97. Determine o resultado da instrução mul $5,$6,$7, quando $6=0xFFFFFFFE e $7=0x00000005.
+```
+0xFFFFFFFE * 0x00000005 = -2 * 5 = -10
+hi = 0xFFFFFFFF
+lo = 0xFFFFFFF6
+```
+## 98. Determine o resultado da execução das instruções virtuais div $5,$6,$7 e rem $5,$6,$7 quando $6=0xFFFFFFF0 e $7=0x00000003.
+```
+0xFFFFFFF0 / 0x00000003 = -16 / 3 = -5 (rem = -1)
+hi = 0xFFFFFFFF # rem $5,$6,$7
+lo = 0xFFFFFFFB # div $5,$6,$7
+```
+
+## 99. Admita que pretendemos executar, em Assembly do MIPS, as operações: <br>``$t0 = $t2/$t3`` e ``$t1 = $t2 % $t3``. <br>Escreva a sequência de instruções em Assembly que permitem realizar estas duas operações. Use apenas instruções nativas.
+```asm
+div $t2, $t3
+mfhi $t1    # $t1 = $t2 % $t3
+mflo $t0    # $t0 = $t2 / $t3
+```
+
+## 100. Descreva as regras que são usadas, na ALU do MIPS, para realizar uma divisão inteira entre duas quantidades com sinal.
+**Nas divisões com sinal aplicam-se as seguintes regras:**
+- Divide-se dividendo por divisor, em módulo
+- O quociente tem sinal negativo se os sinais do dividendo e do divisor forem diferentes
+- O resto tem o mesmo sinal do dividendo
