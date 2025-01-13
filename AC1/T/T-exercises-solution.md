@@ -1456,7 +1456,10 @@ MSB** 0.37502 * 2
 LSB** 1.24288
 ```
 
-$19.187510_{10} = 10011.0011000000000000101_2 = 1.00110011000000000000101_2$
+$19.187510_{10} = 10011.0011000000000000101_2 = 1.00110011000000000000101_2$<br>
+$E = 4_{10} + 127_{10} = 131_{10} = 10000011_2$<br>
+$sinal = 0$<br>
+Representação IEEE 754 -> 0100 0001 1001 1001 1000 0000 0000 0101 = **0x41998005**
 
 ## 110. Determine, em decimal (vírgula fixa), o valor das quantidades seguintes representadas em formato IEEE 754, precisão simples. Na alínea b) apresente apenas o valor em notação científica usando base 2.
 ### a. 0xC19A8000.
