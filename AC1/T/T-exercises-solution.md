@@ -1524,7 +1524,7 @@ $S = 1$<br>
 $E = 01110100_2 = 2^{74 - 127} = 2^{-53}$<br>
 $f = 11000000000000000000000_2 = -1.11_2$<br>
 
-$ \$f0 = 1.11_2 \cdot 2^{-53} - (-1.11_2 \cdot 2^{-53}) = 11.10_2 \cdot 2^{-53} = 1.110_2 \cdot 2^{-52}$<br>
+$ \text{\$f0} = 1.11_2 \cdot 2^{-53} - (-1.11_2 \cdot 2^{-53}) = 11.10_2 \cdot 2^{-53} = 1.110_2 \cdot 2^{-52}$<br>
 ``$f0 = 0011 1010 1110 0000 0000 0000 0000 0000`` = **0x3AE00000** (apenas mudou o expoente de -53 para -52)
 
 ## 114. Repita o exercício anterior admitindo agora as seguintes condições:  
