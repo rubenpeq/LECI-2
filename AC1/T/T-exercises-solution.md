@@ -1471,3 +1471,80 @@ Representação IEEE 754 -> 0100 0001 1001 1001 1000 0000 0000 0101 = **0x419980
 $1.00110101_2 \times 2^4 = 10011.0101_2 = 19.3125_{10}$
 
 ### b. 0x80580000.
+1000 0000 0101 1000 0000 0000 0000 0000<br>
+$S = 1_2$<br>
+$E = 00000000_2 = 0_{10}$ (bit à esquerda vai ser igual a 0 e Exp = -126)<br>
+$f = 10110000000000000000000_2 = 2^{-1} + 2^{-3} + 2^{-4}$<br>
+
+$N = (-1)^S \cdot 1.f \cdot 2^{\text{Exp}} = (-1)^S \cdot 1.f \cdot 2^{E - 127} = -0.1011 \cdot 2^{-126}$
+
+## 111. Considere que o conteúdo dos dois registos seguintes da FPU representam a codificação de duas quantidades reais no formato IEEE 754 precisão simples: <br>``$f0 = 0x416A0000``<br>``$f2 = 0xC0C00000``<br>Calcule o resultado das instruções seguintes, apresentando o seu resultado em hexadecimal:
+### a. ``abs.s $f4,$f2  # $f4 = abs($f2)``
+``$f4 = 0x40C00000  # signal bit = 0``
+
+### b. ``neg.s $f6,$f0  # $f6 = neg($f0)``
+``f6 = 0xC16A0000   # negate signal bit``
+
+# TODO
+### c. ``sub.s $f8, $f0,$f2 # $f8 = $f0 – $f2``
+
+### d. ``sub.s $f10,$f2,$f0 # $f10 = $f2 - $f0``
+
+### e. ``add.s $f12,$f0,$f2 # $f12 = $f0 + $f2``
+
+### f. ``mul.s $f14,$f0,$f2 # $f14 = $f0 * $f2``
+
+### g. ``div.s $f16,$f0,$f2 # $f16 = $f0 / $f2``
+
+### h. ``div.s $f18,$f2,$f0 # $f18 = $f2 / $f0``
+
+### i. ``cvt.d.s $f20,$f2  # Convert single to double``
+
+### j. ``cvt.w.s $f22,$f0  # Convert single to integer``
+---
+
+## 112. Considere a sequência de duas instruções Assembly: <br>``lui $t0,0xC0A8``<br>``mtc1 $t0,$f8``<br> Qual o valor que ficará armazenado no registo $f8, expresso em base dez e vírgula fixa, admitindo uma interpretação em IEEE 754 precisão simples?
+```asm
+lui $t0,0xC0A8  # $t0 = 0xC0A80000
+mtc1 $t0,$f8    # $f8 = 0xC0A80000
+```
+$S = 1$<br>
+$E = 10000001_2 = 2^{129 - 127} = 2^2$<br>
+$f = 01010000000000000000000_2 = 1.0101_2$<br>
+$N = -1.0101_2 \cdot 2^2 = -101.01_2 = -5.25_{10}$
+
+## 113. Considerando que $f2=0x3A600000 e $f4=0xBA600000, determine o resultado armazenado em $f0 pela instrução ``sub.s $f0,$f2,$f4``.
+``$f2 = 0011 1010 0110 0000 0000 0000 0000 0000``<br>
+$S = 0$<br>
+$E = 01110100_2 = 2^{74 - 127} = 2^{-53}$<br>
+$f = 11000000000000000000000_2 = 1.11_2$<br>
+
+``$f4 = 1011 1010 0110 0000 0000 0000 0000 0000``<br>
+$S = 1$<br>
+$E = 01110100_2 = 2^{74 - 127} = 2^{-53}$<br>
+$f = 11000000000000000000000_2 = -1.11_2$<br>
+
+$\$f0 = 1.11_2 \cdot 2^{-53} - (-1.11_2 \cdot 2^{-53}) = 11.10_2 \cdot 2^{-53} = 1.110_2 \cdot 2^{-52}$<br>
+``$f0 = 0011 1010 1110 0000 0000 0000 0000 0000`` = **0x3AE00000** (apenas mudou o expoente de -53 para -52)
+
+## 114. Repita o exercício anterior admitindo agora as seguintes condições:  
+### $f4=0x3F100000 e $f6=0x408C0000 e a instrução ``add.s $f8,$f4,$f6``.
+
+### $f2=0x3F900000 e $f4=0xBEA00000 e a instrução ``mul.s $f0,$f2,$f4``.
+
+### $f2=0x258c0000 e $f4=0x41600000 e a instrução ``div.s $f0,$f2,$f4``.
+
+## 115. Numa norma hipotética KPT de codificação em vírgula flutuante, a mantissa normalizada após a realização de uma operação aritmética tem o valor 1.1111 1111 1111 1110 1000 0000. Qual será o valor final da mantissa (com 16 bits na parte fracionária) após arredondamento para o ímpar mais próximo?
+
+## 116. Assuma que x é uma variável do tipo float residente em $f8 e que o label endWhile corresponde ao endereço da primeira instrução imediatamente após um ciclo while(). Se a avaliação da condição para executar o loop for while (x > 1.5){..} escreva, em Assembly do MIPS, a sequência de instruções necessárias para determinar esta condição.
+```asm
+
+```
+
+## 117. Determine, de acordo com o formato IEEE 754 precisão simples, a representação normalizada, e arredondada para o par mais próximo, do número $100,11011000000000000010110_2$.
+
+## 118. Descreva as diferenças entre uma arquitetura Harvard e uma arquitetura von Neumann?
+
+## 119. Suponha um sistema baseado numa arquitetura von Neumann, com um barramento de endereços de 20 bits e com uma organização de memória do tipo byte-addressable. Qual a dimensão máxima, em bytes, que os programas a executar neste sistema (instruções+dados+stack) podem ter?
+
+## 120. Num processador baseado numa arquitetura Harvard, a memória de instruções está organizada em words de 32 bits, a memória de dados em words de 8 bits (byte-addressable) e os barramentos de endereços respetivos têm uma dimensão de 24 bits. Qual a dimensão, em bytes, dos espaços de endereçamento de instruções e de dados?
