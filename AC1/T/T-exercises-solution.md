@@ -91,7 +91,7 @@ A arquitetura do tipo "**register-memory**" permite que os operandos das instru�
 No caso de "**load-store**", apenas permite que os operandos residam nos registos internos do CPU. MIPS usa uma arquitetura **load-store**.
 
 ## 20. O ciclo de execução de uma instrução é composto por uma sequência ordenada de operações. Quantas e quais são essas operações (passos de execução)?
-O cicle do execução de uma instrução é composto por 5 operações:
+O ciclo do execução de uma instrução é composto por 5 operações:
 - **Fase Fetch**
     - Instruction fetch: leitura do código máquina da instrução (instrução reside em memória)
     - Instruction decode: descodificação da instrução pela unidade de controlo
