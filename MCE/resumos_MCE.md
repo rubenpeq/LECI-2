@@ -14,10 +14,18 @@ $$
 
 ### Vetor unitário — versor:
 $|\vec{u}| = 1$<br><br>
-$ \vec{u} =\begin{pmatrix}\frac{r_x}{|\vec{r}|} \\ \frac{r_y}{|\vec{r}|} \\ \frac{r_z}{|\vec{r}|}\end{pmatrix}$
+$$
+\vec{u} =\begin{pmatrix}\frac{r_x}{|\vec{r}|} \\
+\frac{r_y}{|\vec{r}|} \\
+\frac{r_z}{|\vec{r}|}\end{pmatrix}
+$$
 
 ### Distância entre dois pontos:
-$ \vec{r}_{AB} = \vec{r}_B - \vec{r}_A = \begin{pmatrix}x_B - x_A \\ y_B - y_A \\ z_B - z_A\end{pmatrix}$<br><br>
+$$
+\vec{r}_{AB} = \vec{r}_B - \vec{r}_A = \begin{pmatrix}x_B - x_A \\
+y_B - y_A \\
+z_B - z_A\end{pmatrix}
+$$
 $d(A,B) = |\vec{r}_{AB}| = \sqrt{(x_B - x_A)^2 + (y_B - y_A)^2 + (z_B - z_A)^2}$
 
 
