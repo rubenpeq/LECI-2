@@ -22,11 +22,7 @@ $$
 $$
 
 ### Distância entre dois pontos:
-$$
-\vec{r}_{AB} = \vec{r}_B - \vec{r}_A = \begin{pmatrix}x_B - x_A \\
-y_B - y_A \\
-z_B - z_A\end{pmatrix}
-$$
+$\vec{r}_{AB} = \vec{r}_B - \vec{r}_A = \begin{pmatrix}x_B - x_A \\ y_B - y_A \\ z_B - z_A\end{pmatrix}$
 
 $d(A,B) = |\vec{r}_{AB}| = \sqrt{(x_B - x_A)^2 + (y_B - y_A)^2 + (z_B - z_A)^2}$
 
