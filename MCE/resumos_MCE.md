@@ -3,7 +3,9 @@
 ## Vectores e Sistemas de Coordenadas
 
 ### Módulo de um vetor:
-$|\vec{r}| = r = \sqrt{x^2 + y^2 + z^2}$
+$$
+|\vec{r}| = r = \sqrt{x^2 + y^2 + z^2}
+$$
 
 ### Decomposição / Projeção de um vetor num referencial cartesiano:
 $$
@@ -13,7 +15,9 @@ r \cos \theta_z \end{pmatrix}
 $$
 
 ### Vetor unitário — versor:
-$|\vec{u}| = 1$
+$$
+|\vec{u}| = 1
+$$
 
 $$
 \vec{u} = \begin{pmatrix}\frac{r_x}{|\vec{r}|} \\
@@ -22,9 +26,15 @@ $$
 $$
 
 ### Distância entre dois pontos:
-$\vec{r}_{AB} = \vec{r}_B - \vec{r}_A = \begin{pmatrix}x_B - x_A \\ y_B - y_A \\ z_B - z_A\end{pmatrix}$
+$$
+\vec{r}_{AB} = \vec{r}_B - \vec{r}_A = \begin{pmatrix}x_B - x_A \\
+y_B - y_A \\
+z_B - z_A\end{pmatrix}
+$$
 
-$d(A,B) = |\vec{r}_{AB}| = \sqrt{(x_B - x_A)^2 + (y_B - y_A)^2 + (z_B - z_A)^2}$
+$$
+d(A,B) = |\vec{r}_{AB}| = \sqrt{(x_B - x_A)^2 + (y_B - y_A)^2 + (z_B - z_A)^2}
+$$
 
 
 # Campo Eletromagnético
