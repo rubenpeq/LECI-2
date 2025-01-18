@@ -13,7 +13,7 @@ r \cos \theta_z \end{pmatrix}
 $$
 
 ### Vetor unitário — versor:
-$|\vec{u}| = 1$<br><br>
+$|\vec{u}| = 1$
 $$
 \vec{u} =\begin{pmatrix}\frac{r_x}{|\vec{r}|} \\
 \frac{r_y}{|\vec{r}|} \\
