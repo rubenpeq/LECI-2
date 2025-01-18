@@ -6,7 +6,7 @@
 $|\vec{r}| = r = \sqrt{x^2 + y^2 + z^2}$
 
 ### Decomposição / Projeção de um vetor num referencial cartesiano:
-$ \vec{r} = \begin{pmatrix}r \cos \theta_x \\\r \cos \theta_y \\\r \cos \theta_z \end{pmatrix}$
+$$ \vec{r} = \begin{pmatrix}r \cos \theta_x \\\r \cos \theta_y \\\r \cos \theta_z \end{pmatrix}$$
 
 ### Vetor unitário — versor:
 $|\vec{u}| = 1$<br><br>
