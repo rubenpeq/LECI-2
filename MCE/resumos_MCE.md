@@ -43,4 +43,42 @@ $$
 \vec{v} = \text{constante}
 $$
 
+### Movimento uniformemente acelarado:
+$$
+\vec{a} = \text{constante}
+$$
+
+### Posição:
+$$
+\vec{r} = x \hat{i} + y \hat{j} + z \hat{k}
+$$
+
+$$
+\Delta \vec{r} = (x' - x) \hat{i} +(y' - y) \hat{j} + (z' - z) \hat{k}
+$$
+
+### Velocidade:
+$$
+\vec{v}_{med} = \frac{\Delta \vec{r}}{\Delta t}
+$$
+
+$$
+\vec{v} = \lim_{\Delta t \to 0} \vec{v}_{\text{med}} = \lim_{\Delta t \to 0} \frac{\Delta \vec{r}}{\Delta t}
+$$
+
+$$
+\vec{v} = \frac{d\vec{r}}{dt}
+$$
+
+$$
+\int_{\vec{r}_0}^{\vec{r}} d \vec{r} = \int_{t_0}^{t} \vec{v} dt \iff \vec{r} - \vec{r}_0 = \int_{t_0}^{t} \vec{v} dt
+$$
+
+- **Se a velocidade for constante:** $\vec{r} - \vec{r}_0 = \vec{v}(t - t_0) \iff \vec{r} = \vec{r}_0 + \vec{v}(t - t_0)$
+
+### Momento linear:
+$$
+\vec{p} = m \cdot \vec{v}
+$$
+
 # Campo Eletromagnético
