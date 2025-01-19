@@ -74,7 +74,10 @@ $$
 \int_{\vec{r}_0}^{\vec{r}} d \vec{r} = \int_{t_0}^{t} \vec{v} dt \iff \vec{r} - \vec{r}_0 = \int_{t_0}^{t} \vec{v} dt
 $$
 
-- **Se a velocidade for constante:** $\vec{r} - \vec{r}_0 = \vec{v}(t - t_0) \iff \vec{r} = \vec{r}_0 + \vec{v}(t - t_0)$
+- **Se a velocidade for constante:**
+$$
+\vec{r} - \vec{r}_0 = \vec{v}(t - t_0) \iff \vec{r} = \vec{r}_0 + \vec{v}(t - t_0)
+$$
 
 ### Momento linear:
 $$
