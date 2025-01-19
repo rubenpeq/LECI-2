@@ -76,7 +76,7 @@ $$
 
 - **Se a velocidade for constante:**
 $$
-\vec{r} - \vec{r}_0 = \vec{v}(t - t_0) \iff \vec{r} = \vec{r}_0 + \vec{v}(t - t_0)
+\vec{r} - \vec{r}_0 = \vec{v}(t - t_0) \vec{r} = \vec{r}_0 + \vec{v}(t - t_0)
 $$
 
 ### Momento linear:
