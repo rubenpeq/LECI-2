@@ -36,5 +36,11 @@ $$
 d(A,B) = |\vec{r}_{AB}| = \sqrt{(x_B - x_A)^2 + (y_B - y_A)^2 + (z_B - z_A)^2}
 $$
 
+## Movimento
+
+### Movimento rectilíneo e uniforme:
+$$
+\vec{v} = \text{constante}
+$$
 
 # Campo Eletromagnético
