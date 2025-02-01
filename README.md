@@ -14,4 +14,4 @@
 | Communication Networks II             |  2  |
 | Systems Analysis                      |  2  |
 | Computer Architecture II              |  2  |
-| <details><summary>**Transferable Skills II**</summary> Option I <br /> Option II <br /> Option III </details> |  2  |
+| <details><summary>**Transferable Skills II**</summary> Microcontrollers and Interaction with Sensors and Actuators <br /> Materials and Sustainable Development <br /> Data Visualization </details> |  2  |
