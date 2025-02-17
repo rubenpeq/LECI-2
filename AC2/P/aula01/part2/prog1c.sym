@@ -1,0 +1,17 @@
+GAS LISTING prog1c.s 			page 1
+
+
+DEFINED SYMBOLS
+            prog1c.s:4      *ABS*:0000000000000005 readint10
+            prog1c.s:5      *ABS*:0000000000000006 printint
+            prog1c.s:6      *ABS*:0000000000000007 printint10
+            prog1c.s:7      *ABS*:0000000000000008 printstr
+            prog1c.s:10     .data:0000000000000000 str1
+            prog1c.s:11     .data:000000000000002a str2
+            prog1c.s:12     .data:0000000000000047 str3
+            prog1c.s:13     .data:000000000000005a str4
+            prog1c.s:14     .data:000000000000006e str5
+            prog1c.s:15     .data:000000000000008d str6
+            prog1c.s:19     .text:0000000000000000 main
+
+NO UNDEFINED SYMBOLS
