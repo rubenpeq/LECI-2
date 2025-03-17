@@ -76,8 +76,8 @@ int main(void)
                 ledcnt--;
             }
             else
-                LATC = LATC & 0xBFFF;
-            delay(10); // wait 10 ms (1/100Hz)
+                LATC = LATC & 0xBFFF; // turn off D11
+            delay(10);                // wait 10 ms (1/100Hz)
         } while (++i < cntfreq);
         if ((PORTB & 0x01) == 0)
             counter = (counter + 59) % 60; // decrement (mod 60)
