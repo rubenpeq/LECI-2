@@ -30,7 +30,7 @@ while:
     andi    $t2,    $t2,            0x0001  # Isolate bit0
 
     lw      $t3,    LATE($t1)               # READ (Read LATE register)
-    andi    $t3,    $t3,            0xFFFE  # Isolate bit0
+    andi    $t3,    $t3,            0x0001  # Isolate bit0
     or      $t3,    $t3,            $t2
     xori    $t3,    $t3,            0x0001  # NOT bit0
     sw      $t3,    LATE($t1)               # RE0 = RB0
